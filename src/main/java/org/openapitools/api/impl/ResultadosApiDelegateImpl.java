@@ -4,6 +4,7 @@ import org.openapitools.api.ResultadosApiDelegate;
 import org.openapitools.model.ResultsResponse;
 import org.openapitools.service.ResultadosService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class ResultadosApiDelegateImpl implements ResultadosApiDelegate {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
 }

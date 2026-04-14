@@ -4,6 +4,7 @@ import org.openapitools.api.EmailApiDelegate;
 import org.openapitools.model.EmailResponse;
 import org.openapitools.service.EmailService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -22,6 +23,7 @@ public class EmailApiDelegateImpl implements EmailApiDelegate {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
 }
