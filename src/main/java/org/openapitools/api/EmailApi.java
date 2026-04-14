@@ -20,28 +20,24 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.media.ExampleObject;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.context.request.NativeWebRequest;
 import org.springframework.web.multipart.MultipartFile;
 
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.*;
 import java.util.List;
 import java.util.Map;
-import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-07T16:11:29.458034+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Email", description = "the Email API")
 public interface EmailApi {
 
-    default Optional<NativeWebRequest> getRequest() {
-        return Optional.empty();
+    default EmailApiDelegate getDelegate() {
+        return new EmailApiDelegate() {};
     }
 
     String PATH_EMAIL_POST = "/Email";
@@ -78,42 +74,7 @@ public interface EmailApi {
         @Parameter(name = "emailAddress", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "emailAddress", required = false) @Nullable String emailAddress,
         @Parameter(name = "message", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "message", required = false) @Nullable String message
     ) {
-        getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"errorMessage\" : \"errorMessage\", \"done\" : true }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-                if (mediaType.isCompatibleWith(MediaType.valueOf("text/json"))) {
-                    String exampleString = "Custom MIME type example not yet supported: text/json";
-                    ApiUtil.setExampleResponse(request, "text/json", exampleString);
-                    break;
-                }
-                if (mediaType.isCompatibleWith(MediaType.valueOf("text/plain"))) {
-                    String exampleString = "Custom MIME type example not yet supported: text/plain";
-                    ApiUtil.setExampleResponse(request, "text/plain", exampleString);
-                    break;
-                }
-                if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
-                    String exampleString = "{ \"instance\" : \"instance\", \"detail\" : \"detail\", \"type\" : \"type\", \"title\" : \"title\", \"status\" : 0 }";
-                    ApiUtil.setExampleResponse(request, "application/json", exampleString);
-                    break;
-                }
-                if (mediaType.isCompatibleWith(MediaType.valueOf("text/json"))) {
-                    String exampleString = "Custom MIME type example not yet supported: text/json";
-                    ApiUtil.setExampleResponse(request, "text/json", exampleString);
-                    break;
-                }
-                if (mediaType.isCompatibleWith(MediaType.valueOf("text/plain"))) {
-                    String exampleString = "Custom MIME type example not yet supported: text/plain";
-                    ApiUtil.setExampleResponse(request, "text/plain", exampleString);
-                    break;
-                }
-            }
-        });
-        return new ResponseEntity<>(HttpStatus.NOT_IMPLEMENTED);
-
+        return getDelegate().emailPost(emailAddress, message);
     }
 
 }

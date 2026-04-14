@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.context.request.NativeWebRequest;
 
 import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
@@ -28,21 +27,20 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-07T16:11:29.458034+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 @Controller
 @RequestMapping("${openapi.servicioConsumible.base-path:}")
 public class EmailApiController implements EmailApi {
 
-    private final NativeWebRequest request;
+    private final EmailApiDelegate delegate;
 
-    @Autowired
-    public EmailApiController(NativeWebRequest request) {
-        this.request = request;
+    public EmailApiController(@Autowired(required = false) EmailApiDelegate delegate) {
+        this.delegate = Optional.ofNullable(delegate).orElse(new EmailApiDelegate() {});
     }
 
     @Override
-    public Optional<NativeWebRequest> getRequest() {
-        return Optional.ofNullable(request);
+    public EmailApiDelegate getDelegate() {
+        return delegate;
     }
 
 }

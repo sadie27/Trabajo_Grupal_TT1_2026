@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RequestPart;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.context.request.NativeWebRequest;
 
 import jakarta.validation.constraints.*;
 import jakarta.validation.Valid;
@@ -29,21 +28,20 @@ import java.util.Map;
 import java.util.Optional;
 import jakarta.annotation.Generated;
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-07T16:11:29.458034+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 @Controller
 @RequestMapping("${openapi.servicioConsumible.base-path:}")
 public class SolicitudApiController implements SolicitudApi {
 
-    private final NativeWebRequest request;
+    private final SolicitudApiDelegate delegate;
 
-    @Autowired
-    public SolicitudApiController(NativeWebRequest request) {
-        this.request = request;
+    public SolicitudApiController(@Autowired(required = false) SolicitudApiDelegate delegate) {
+        this.delegate = Optional.ofNullable(delegate).orElse(new SolicitudApiDelegate() {});
     }
 
     @Override
-    public Optional<NativeWebRequest> getRequest() {
-        return Optional.ofNullable(request);
+    public SolicitudApiDelegate getDelegate() {
+        return delegate;
     }
 
 }

@@ -24,7 +24,7 @@ import jakarta.annotation.Generated;
  * Solicitud
  */
 
-@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-07T16:11:29.458034+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
+@Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 public class Solicitud {
 
   @Valid
