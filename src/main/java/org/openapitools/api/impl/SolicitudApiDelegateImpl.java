@@ -5,6 +5,7 @@ import org.openapitools.model.Solicitud;
 import org.openapitools.model.SolicitudResponse;
 import org.openapitools.service.SolicitudService;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
@@ -25,6 +26,7 @@ public class SolicitudApiDelegateImpl implements SolicitudApiDelegate {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(result);
     }
 
@@ -34,6 +36,7 @@ public class SolicitudApiDelegateImpl implements SolicitudApiDelegate {
 
         return ResponseEntity
                 .status(HttpStatus.OK)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(result);
     }
 
@@ -43,6 +46,7 @@ public class SolicitudApiDelegateImpl implements SolicitudApiDelegate {
 
         return ResponseEntity
                 .status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
                 .body(response);
     }
 }
