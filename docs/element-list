@@ -1,0 +1,6 @@
+org.openapitools
+org.openapitools.api
+org.openapitools.api.impl
+org.openapitools.configuration
+org.openapitools.model
+org.openapitools.service
