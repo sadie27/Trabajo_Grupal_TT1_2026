@@ -1,0 +1,50 @@
+name: Test and Promote
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  test-and-promote:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up JDK 17  
+        uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+
+      - name: Cache Maven dependencies
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: ${{ runner.os }}-maven-
+
+      - name: Run tests
+        id: tests
+        run: mvn test
+
+      - name: Update early branch
+        if: success()
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git push origin HEAD:refs/heads/early --force
+
+      - name: Summary on success
+        if: success()
+        run: echo "###  Tests superados. La rama **early** ha sido actualizada." >> $GITHUB_STEP_SUMMARY
+
+      - name: Summary on failure
+        if: failure()
+        run: echo "###  Tests fallidos. La rama **early** NO ha sido modificada." >> $GITHUB_STEP_SUMMARY
