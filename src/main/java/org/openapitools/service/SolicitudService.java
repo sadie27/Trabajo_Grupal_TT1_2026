@@ -38,23 +38,30 @@ public class SolicitudService {
     }
 
     public SolicitudResponse crearSolicitud(String nombreUsuario, Solicitud solicitud) {
-        // validaciones
+
+        // 1. Validaciones de nulos básicos
         if (nombreUsuario == null || nombreUsuario.isEmpty()) {
             throw new IllegalArgumentException("nombreUsuario es obligatorio");
         }
-
         if (solicitud == null) {
             throw new IllegalArgumentException("solicitud es obligatoria");
         }
 
-        // lógica real
+        // 2. Validación de JsonNullable (Segura)
+        if (solicitud.getCantidadesIniciales() != null && solicitud.getCantidadesIniciales().isPresent() &&
+                solicitud.getNombreEntidades() != null && solicitud.getNombreEntidades().isPresent()) {
 
+            if (solicitud.getCantidadesIniciales().get().size() != solicitud.getNombreEntidades().get().size()) {
+                throw new IllegalArgumentException("Las listas deben tener el mismo tamaño");
+            }
+        }
+
+        // lógica real
         int tokenGenerado = new Random().nextInt(10000);
 
         return new SolicitudResponse()
                 .done(true)
                 .tokenSolicitud(tokenGenerado)
-                .data(true)
-                .errorMessage(null);
+                .data(true);
     }
 }
