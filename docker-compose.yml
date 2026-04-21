@@ -1,0 +1,47 @@
+version: '3.8'
+
+services:
+  mysql:
+    image: mysql:8.0
+    container_name: solicitudes_mysql
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: solicitudes_db
+      MYSQL_USER: solicitudes_user
+      MYSQL_PASSWORD: solicitudes_pass
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - solicitudes_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      timeout: 20s
+      retries: 10
+
+  app:
+    build: .
+    container_name: solicitudes_app
+    restart: always
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/solicitudes_db
+      SPRING_DATASOURCE_USERNAME: solicitudes_user
+      SPRING_DATASOURCE_PASSWORD: solicitudes_pass
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - solicitudes_network
+
+volumes:
+  mysql_data:
+    driver: local
+
+networks:
+  solicitudes_network:
+    driver: bridge
