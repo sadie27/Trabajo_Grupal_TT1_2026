@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - stable
+      - implementacion_dominio
 
 permissions:
   pages: write
