@@ -1,5 +1,6 @@
 .openapi-generator-ignore
 README.md
+index.html
 pom.xml
 src/main/java/org/openapitools/OpenApiGeneratorApplication.java
 src/main/java/org/openapitools/RFC3339DateFormat.java
