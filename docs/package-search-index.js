@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","u":"allpackages-index.html"},{"l":"org.openapitools"},{"l":"org.openapitools.api"},{"l":"org.openapitools.api.impl"},{"l":"org.openapitools.configuration"},{"l":"org.openapitools.model"},{"l":"org.openapitools.service"}];updateSearchResults();
