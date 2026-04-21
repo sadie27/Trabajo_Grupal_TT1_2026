@@ -11,6 +11,21 @@ permissions:
 jobs:
   test-and-promote:
     runs-on: ubuntu-latest
+
+    services:
+      mysql:
+        image: mysql:8.0
+        env:
+          MYSQL_ROOT_PASSWORD: root
+          MYSQL_DATABASE: solicitudes_db
+        ports:
+          - 3306:3306
+        options: >-
+          --health-cmd="mysqladmin ping --silent"
+          --health-interval=10s
+          --health-timeout=5s
+          --health-retries=3
+
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -30,8 +45,20 @@ jobs:
           key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
           restore-keys: ${{ runner.os }}-maven-
 
+      - name: Wait for MySQL to be ready
+        run: |
+          until mysqladmin ping -h 127.0.0.1 -P 3306 --silent; do
+            echo 'Waiting for MySQL to be available...'
+            sleep 2
+          done
+          echo 'MySQL is ready!'
+
       - name: Run tests
         id: tests
+        env:
+          SPRING_DATASOURCE_URL: jdbc:mysql://localhost:3306/solicitudes_db
+          SPRING_DATASOURCE_USERNAME: root
+          SPRING_DATASOURCE_PASSWORD: root
         run: mvn test
 
       - name: Update early branch
@@ -39,7 +66,13 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git push origin HEAD:refs/heads/early --force
+          git fetch origin
+          git checkout early 2>/dev/null || git checkout -b early
+          if ! git merge --ff-only origin/main; then
+            echo "### ❌ La rama early tiene commits que no están en main. Resuélvelo manualmente." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          fi
+          git push origin early
 
       - name: Summary on success
         if: success()
