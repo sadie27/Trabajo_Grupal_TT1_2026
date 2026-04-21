@@ -4,6 +4,7 @@ on:
   push:
     branches:
       - early
+      - implementacion_dominio
 
 jobs:
   build-docs:
