@@ -1,6 +1,7 @@
 package org.trabajott1.persistence.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +36,9 @@ public class SolicitudEntity {
     @OneToOne(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private ResultadoEntity resultado;
 
+    public SolicitudEntity() {
+    }
+
     @PrePersist
     protected void onCreate() {
         fechaCreacion = LocalDateTime.now();
@@ -44,9 +48,6 @@ public class SolicitudEntity {
     @PreUpdate
     protected void onUpdate() {
         fechaActualizacion = LocalDateTime.now();
-    }
-
-    public SolicitudEntity() {
     }
 
     public Integer getIdSolicitud() {

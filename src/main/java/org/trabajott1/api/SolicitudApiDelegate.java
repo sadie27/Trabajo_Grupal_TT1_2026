@@ -1,21 +1,15 @@
 package org.trabajott1.api;
 
-import org.springframework.lang.Nullable;
-import org.trabajott1.model.ProblemDetails;
-import org.trabajott1.model.Solicitud;
-import org.trabajott1.model.SolicitudResponse;
+import jakarta.annotation.Generated;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.context.request.NativeWebRequest;
-import org.springframework.web.multipart.MultipartFile;
+import org.trabajott1.model.Solicitud;
+import org.trabajott1.model.SolicitudResponse;
 
-import jakarta.validation.constraints.*;
-import jakarta.validation.Valid;
 import java.util.List;
-import java.util.Map;
 import java.util.Optional;
-import jakarta.annotation.Generated;
 
 /**
  * A delegate to be called by the {@link SolicitudApiController}}.
@@ -31,16 +25,16 @@ public interface SolicitudApiDelegate {
     /**
      * GET /Solicitud/ComprobarSolicitud
      *
-     * @param nombreUsuario  (optional)
-     * @param tok  (optional)
+     * @param nombreUsuario (optional)
+     * @param tok           (optional)
      * @return Created (status code 201)
-     *         or Bad Request (status code 400)
+     * or Bad Request (status code 400)
      * @see SolicitudApi#solicitudComprobarSolicitudGet
      */
     default ResponseEntity<List<Integer>> solicitudComprobarSolicitudGet(String nombreUsuario,
-        Integer tok) {
+                                                                         Integer tok) {
         getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "[ 0, 0 ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
@@ -70,14 +64,14 @@ public interface SolicitudApiDelegate {
     /**
      * GET /Solicitud/GetSolicitudesUsuario
      *
-     * @param nombreUsuario  (optional)
+     * @param nombreUsuario (optional)
      * @return Created (status code 201)
-     *         or Bad Request (status code 400)
+     * or Bad Request (status code 400)
      * @see SolicitudApi#solicitudGetSolicitudesUsuarioGet
      */
     default ResponseEntity<List<Integer>> solicitudGetSolicitudesUsuarioGet(String nombreUsuario) {
         getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "[ 0, 0 ]";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);
@@ -107,16 +101,16 @@ public interface SolicitudApiDelegate {
     /**
      * POST /Solicitud/Solicitar
      *
-     * @param nombreUsuario  (optional)
-     * @param solicitud  (optional)
+     * @param nombreUsuario (optional)
+     * @param solicitud     (optional)
      * @return Created (status code 201)
-     *         or Bad Request (status code 400)
+     * or Bad Request (status code 400)
      * @see SolicitudApi#solicitudSolicitarPost
      */
     default ResponseEntity<SolicitudResponse> solicitudSolicitarPost(String nombreUsuario,
-        Solicitud solicitud) {
+                                                                     Solicitud solicitud) {
         getRequest().ifPresent(request -> {
-            for (MediaType mediaType: MediaType.parseMediaTypes(request.getHeader("Accept"))) {
+            for (MediaType mediaType : MediaType.parseMediaTypes(request.getHeader("Accept"))) {
                 if (mediaType.isCompatibleWith(MediaType.valueOf("application/json"))) {
                     String exampleString = "{ \"data\" : true, \"tokenSolicitud\" : 0, \"errorMessage\" : \"errorMessage\", \"done\" : true }";
                     ApiUtil.setExampleResponse(request, "application/json", exampleString);

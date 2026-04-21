@@ -1,13 +1,13 @@
 package org.trabajott1.api.impl;
 
-import org.trabajott1.api.SolicitudApiDelegate;
-import org.trabajott1.model.Solicitud;
-import org.trabajott1.model.SolicitudResponse;
-import org.trabajott1.service.SolicitudService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.trabajott1.api.SolicitudApiDelegate;
+import org.trabajott1.model.Solicitud;
+import org.trabajott1.model.SolicitudResponse;
+import org.trabajott1.service.SolicitudService;
 
 import java.util.List;
 

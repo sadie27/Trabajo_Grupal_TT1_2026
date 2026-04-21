@@ -1,6 +1,7 @@
 package org.trabajott1.persistence.entity;
 
 import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -22,12 +23,12 @@ public class ResultadoEntity {
     @Column(name = "fecha_procesamiento")
     private LocalDateTime fechaProcesamiento;
 
+    public ResultadoEntity() {
+    }
+
     @PrePersist
     protected void onCreate() {
         fechaProcesamiento = LocalDateTime.now();
-    }
-
-    public ResultadoEntity() {
     }
 
     public Integer getIdResultado() {

@@ -1,7 +1,7 @@
 package org.trabajott1.service;
 
-import org.trabajott1.model.ResultsResponse;
 import org.springframework.stereotype.Service;
+import org.trabajott1.model.ResultsResponse;
 
 @Service
 public class ResultadosService {

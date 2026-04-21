@@ -1,7 +1,7 @@
 package org.trabajott1.service;
 
-import org.trabajott1.model.EmailResponse;
 import org.springframework.stereotype.Service;
+import org.trabajott1.model.EmailResponse;
 
 @Service
 public class EmailService {

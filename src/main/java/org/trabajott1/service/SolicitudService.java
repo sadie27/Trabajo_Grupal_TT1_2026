@@ -1,8 +1,8 @@
 package org.trabajott1.service;
 
+import org.springframework.stereotype.Service;
 import org.trabajott1.model.Solicitud;
 import org.trabajott1.model.SolicitudResponse;
-import org.springframework.stereotype.Service;
 
 import java.util.Arrays;
 import java.util.List;

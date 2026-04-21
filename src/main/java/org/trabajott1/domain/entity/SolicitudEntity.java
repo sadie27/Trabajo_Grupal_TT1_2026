@@ -13,7 +13,7 @@ public class SolicitudEntity {
     private String nombreUsuario;
     private List<Integer> cantidadesIniciales;
     private List<String> nombreEntidades;
-    private String estado; 
+    private String estado;
     private LocalDateTime fechaCreacion;
     private LocalDateTime fechaActualizacion;
 
@@ -22,30 +22,52 @@ public class SolicitudEntity {
         this.estado = "PENDIENTE";
     }
 
-    public Integer getToken() { return token; }
-    public void setToken(Integer token) { this.token = token; }
+    public Integer getToken() {
+        return token;
+    }
 
-    public String getNombreUsuario() { return nombreUsuario; }
+    public void setToken(Integer token) {
+        this.token = token;
+    }
+
+    public String getNombreUsuario() {
+        return nombreUsuario;
+    }
+
     public void setNombreUsuario(String nombreUsuario) {
         this.nombreUsuario = nombreUsuario;
     }
 
-    public List<Integer> getCantidadesIniciales() { return cantidadesIniciales; }
+    public List<Integer> getCantidadesIniciales() {
+        return cantidadesIniciales;
+    }
+
     public void setCantidadesIniciales(List<Integer> cantidadesIniciales) {
         this.cantidadesIniciales = cantidadesIniciales;
     }
 
-    public List<String> getNombreEntidades() { return nombreEntidades; }
+    public List<String> getNombreEntidades() {
+        return nombreEntidades;
+    }
+
     public void setNombreEntidades(List<String> nombreEntidades) {
         this.nombreEntidades = nombreEntidades;
     }
 
-    public String getEstado() { return estado; }
+    public String getEstado() {
+        return estado;
+    }
+
     public void setEstado(String estado) {
         this.fechaActualizacion = LocalDateTime.now();
         this.estado = estado;
     }
 
-    public LocalDateTime getFechaCreacion() { return fechaCreacion; }
-    public LocalDateTime getFechaActualizacion() { return fechaActualizacion; }
+    public LocalDateTime getFechaCreacion() {
+        return fechaCreacion;
+    }
+
+    public LocalDateTime getFechaActualizacion() {
+        return fechaActualizacion;
+    }
 }

@@ -1,10 +1,13 @@
 package org.trabajott1.repository.impl;
 
+import org.springframework.stereotype.Repository;
 import org.trabajott1.domain.entity.SolicitudEntity;
 import org.trabajott1.repository.ISolicitudRepository;
-import org.springframework.stereotype.Repository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -36,9 +39,9 @@ public class SolicitudRepositoryInMemory implements ISolicitudRepository {
     @Override
     public List<SolicitudEntity> findByNombreUsuario(String nombreUsuario) {
         return storage.values().stream()
-            .filter(s -> s.getNombreUsuario() != null &&
+                .filter(s -> s.getNombreUsuario() != null &&
                         s.getNombreUsuario().equals(nombreUsuario))
-            .collect(Collectors.toList());
+                .collect(Collectors.toList());
     }
 
     @Override

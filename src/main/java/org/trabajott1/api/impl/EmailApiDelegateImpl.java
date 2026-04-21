@@ -1,12 +1,12 @@
 package org.trabajott1.api.impl;
 
-import org.trabajott1.api.EmailApiDelegate;
-import org.trabajott1.model.EmailResponse;
-import org.trabajott1.service.EmailService;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.trabajott1.api.EmailApiDelegate;
+import org.trabajott1.model.EmailResponse;
+import org.trabajott1.service.EmailService;
 
 @Service
 public class EmailApiDelegateImpl implements EmailApiDelegate {
