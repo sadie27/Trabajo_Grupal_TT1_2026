@@ -1,7 +1,6 @@
--- Creación de la base de datos (ya se crea automáticamente por docker-compose)
 USE solicitudes_db;
 
--- Tabla principal de solicitudes
+-- Tabla de solicitudes
 CREATE TABLE IF NOT EXISTS solicitudes (
     id_solicitud INT AUTO_INCREMENT PRIMARY KEY,
     nombre_usuario VARCHAR(255) NOT NULL,
@@ -33,7 +32,6 @@ CREATE TABLE IF NOT EXISTS resultados (
     INDEX idx_id_solicitud (id_solicitud)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Comentarios de las tablas
 ALTER TABLE solicitudes COMMENT = 'Almacena las solicitudes de los usuarios';
 ALTER TABLE entidades_solicitud COMMENT = 'Almacena las entidades y cantidades de cada solicitud';
 ALTER TABLE resultados COMMENT = 'Almacena el resultado procesado de cada solicitud (1:1)';
