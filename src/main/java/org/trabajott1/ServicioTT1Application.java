@@ -15,13 +15,13 @@ import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGe
         basePackages = {"org.trabajott1", "org.trabajott1.api", "org.trabajott1.api.impl", "org.trabajott1.configuration", "org.trabajott1.model", "org.trabajott1.service"},
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
-public class OpenApiGeneratorApplication {
+public class ServicioTT1Application {
 
     public static void main(String[] args) {
-        SpringApplication.run(OpenApiGeneratorApplication.class, args);
+        SpringApplication.run(ServicioTT1Application.class, args);
     }
 
-    @Bean(name = "org.openapitools.OpenApiGeneratorApplication.jsonNullableModule")
+    @Bean(name = "org.trabajott1.ServicioTT1Application.jsonNullableModule")
     public Module jsonNullableModule() {
         return new JsonNullableModule();
     }
