@@ -118,4 +118,19 @@ public class SolicitudEntity {
     public void setResultado(ResultadoEntity resultado) {
         this.resultado = resultado;
     }
+
+    /**
+     * Helper para añadir entidades desde listas de la API.
+     */
+    public void addEntidades(List<String> nombres, List<Integer> cantidades) {
+        if (nombres == null || cantidades == null || nombres.size() != cantidades.size()) {
+            return;
+        }
+        for (int i = 0; i < nombres.size(); i++) {
+            EntidadSolicitudEntity entidad = new EntidadSolicitudEntity();
+            entidad.setNombreEntidad(nombres.get(i));
+            entidad.setCantidadInicial(cantidades.get(i));
+            this.addEntidad(entidad);
+        }
+    }
 }
