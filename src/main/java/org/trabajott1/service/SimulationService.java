@@ -26,7 +26,7 @@ public class SimulationService {
     @Transactional
     public void runSimulationAsync(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
         // Simulamos un pequeño retraso para que se note la asincronía
-        try { Thread.sleep(2000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        try { Thread.sleep(5000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
 
         String resultadoSimulacion = generateSimulationData(entityNames, initialQuantities);
 
