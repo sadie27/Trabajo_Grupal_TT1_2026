@@ -7,12 +7,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator;
+import org.springframework.scheduling.annotation.EnableAsync;
 
 @SpringBootApplication(
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
+@EnableAsync
 @ComponentScan(
-        basePackages = {"org.trabajott1", "org.trabajott1.api", "org.trabajott1.api.impl", "org.trabajott1.configuration", "org.trabajott1.model", "org.trabajott1.service"},
+        basePackages = {"org.trabajott1", "org.trabajott1.api", "org.trabajott1.api.impl", "org.trabajott1.configuration", "org.trabajott1.model", "org.trabajott1.repository", "org.trabajott1.service"},
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
 public class ServicioTT1Application {
