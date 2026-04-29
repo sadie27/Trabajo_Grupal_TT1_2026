@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -41,38 +42,60 @@ public interface EmailApi {
     }
 
     String PATH_EMAIL_POST = "/Email";
-    /**
-     * POST /Email
-     *
-     * @param emailAddress  (optional)
-     * @param message  (optional)
-     * @return Created (status code 201)
-     *         or Bad Request (status code 400)
-     */
+
     @Operation(
-        operationId = "emailPost",
-        tags = { "Email" },
-        responses = {
-            @ApiResponse(responseCode = "201", description = "Created", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = EmailResponse.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = EmailResponse.class)),
-                @Content(mediaType = "text/json", schema = @Schema(implementation = EmailResponse.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "text/json", schema = @Schema(implementation = ProblemDetails.class))
-            })
-        }
+            summary = "Enviar una notificación por correo electrónico",
+            description = """
+            Envía un mensaje de correo electrónico a la dirección indicada.
+            NOTA: En la versión actual esta operación es un stub — valida los parámetros
+            y devuelve done=true pero no realiza el envío real del correo.
+            """,
+            tags = {"Email"}
     )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Operación ejecutada. En la versión actual siempre devuelve done=true.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = EmailResponse.class),
+                            examples = @ExampleObject(value = """
+                {
+                  "done": true,
+                  "errorMessage": null
+                }
+                """)
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "La dirección de correo electrónico es nula o vacía.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(value = """
+                {
+                  "type": "about:blank",
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "Email vacío",
+                  "instance": "/Email"
+                }
+                """)
+                    )
+            )
+    })
+    @Parameters({
+            @Parameter(name = "emailAddress", description = "Dirección de correo electrónico del destinatario.", required = true, example = "usuario@ejemplo.com"),
+            @Parameter(name = "message", description = "Contenido del mensaje a enviar.", required = false, example = "Tu simulación ha finalizado.")
+    })
     @RequestMapping(
-        method = RequestMethod.POST,
-        value = EmailApi.PATH_EMAIL_POST,
-        produces = { "text/plain", "application/json", "text/json" }
+            method = RequestMethod.POST,
+            value = EmailApi.PATH_EMAIL_POST,
+            produces = { "text/plain", "application/json", "text/json" }
     )
     default ResponseEntity<EmailResponse> emailPost(
-        @Parameter(name = "emailAddress", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "emailAddress", required = false) @Nullable String emailAddress,
-        @Parameter(name = "message", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "message", required = false) @Nullable String message
+            @Parameter(name = "emailAddress", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "emailAddress", required = false) @Nullable String emailAddress,
+            @Parameter(name = "message", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "message", required = false) @Nullable String message
     ) {
         return getDelegate().emailPost(emailAddress, message);
     }

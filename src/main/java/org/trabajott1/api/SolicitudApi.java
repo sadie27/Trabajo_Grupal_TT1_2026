@@ -17,6 +17,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -51,29 +52,40 @@ public interface SolicitudApi {
      *         or Bad Request (status code 400)
      */
     @Operation(
-        operationId = "solicitudComprobarSolicitudGet",
-        tags = { "Solicitud" },
-        responses = {
-            @ApiResponse(responseCode = "201", description = "Created", content = {
-                @Content(mediaType = "text/plain", array = @ArraySchema(schema = @Schema(implementation = Integer.class))),
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Integer.class))),
-                @Content(mediaType = "text/json", array = @ArraySchema(schema = @Schema(implementation = Integer.class)))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "text/json", schema = @Schema(implementation = ProblemDetails.class))
-            })
-        }
+            summary = "Comprobar el estado de una solicitud",
+            description = """
+        Consulta el estado de procesamiento de una solicitud identificada por su token.
+        Devuelve un array de dos enteros que codifica el estado:
+        - [1, 0]: La simulación ha FINALIZADO. Los resultados están disponibles.
+        - [0, 1]: La simulación está en PROCESANDO (en ejecución asíncrona).
+        - [0, 0]: No se encontró ninguna solicitud con ese token para ese usuario.
+        """,
+            tags = {"Solicitud"}
     )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Estado consultado correctamente.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = {
+                                    @ExampleObject(name = "Simulación finalizada", value = "[1, 0]"),
+                                    @ExampleObject(name = "Simulación en proceso", value = "[0, 1]"),
+                                    @ExampleObject(name = "No encontrada", value = "[0, 0]")
+                            }
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "nombreUsuario o tok son nulos.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)))
+    })
+
     @RequestMapping(
         method = RequestMethod.GET,
         value = SolicitudApi.PATH_SOLICITUD_COMPROBAR_SOLICITUD_GET,
         produces = { "text/plain", "application/json", "text/json" }
     )
     default ResponseEntity<List<Integer>> solicitudComprobarSolicitudGet(
-        @Parameter(name = "nombreUsuario", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "nombreUsuario", required = false) @Nullable String nombreUsuario,
-        @Parameter(name = "tok", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "tok", required = false) @Nullable Integer tok
+            @Parameter(name = "nombreUsuario", description = "Nombre del usuario", required = true) @Valid @RequestParam(value = "nombreUsuario", required = false) String nombreUsuario,
+            @Parameter(name = "tok", description = "Token", required = true) @Valid @RequestParam(value = "tok", required = false) Integer tok
     ) {
         return getDelegate().solicitudComprobarSolicitudGet(nombreUsuario, tok);
     }
@@ -88,28 +100,30 @@ public interface SolicitudApi {
      *         or Bad Request (status code 400)
      */
     @Operation(
-        operationId = "solicitudGetSolicitudesUsuarioGet",
-        tags = { "Solicitud" },
-        responses = {
-            @ApiResponse(responseCode = "201", description = "Created", content = {
-                @Content(mediaType = "text/plain", array = @ArraySchema(schema = @Schema(implementation = Integer.class))),
-                @Content(mediaType = "application/json", array = @ArraySchema(schema = @Schema(implementation = Integer.class))),
-                @Content(mediaType = "text/json", array = @ArraySchema(schema = @Schema(implementation = Integer.class)))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "text/json", schema = @Schema(implementation = ProblemDetails.class))
-            })
-        }
+            summary = "Obtener todos los tokens de solicitudes de un usuario",
+            description = "Devuelve la lista de tokens correspondientes a todas las solicitudes registradas por un usuario concreto, independientemente de su estado.",
+            tags = {"Solicitud"}
     )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "Lista de tokens obtenida correctamente. Puede ser una lista vacía si el usuario no tiene solicitudes.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(name = "Tokens del usuario", value = "[47382, 23451, 89012]")
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "nombreUsuario nulo o vacío.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)))
+    })
+
     @RequestMapping(
         method = RequestMethod.GET,
         value = SolicitudApi.PATH_SOLICITUD_GET_SOLICITUDES_USUARIO_GET,
         produces = { "text/plain", "application/json", "text/json" }
     )
     default ResponseEntity<List<Integer>> solicitudGetSolicitudesUsuarioGet(
-        @Parameter(name = "nombreUsuario", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "nombreUsuario", required = false) @Nullable String nombreUsuario
+            @Parameter(name = "nombreUsuario", description = "Nombre del usuario cuyas solicitudes se desean listar.", required = true, example = "usuario_test")
+            @Valid @RequestParam(value = "nombreUsuario", required = false) String nombreUsuario
     ) {
         return getDelegate().solicitudGetSolicitudesUsuarioGet(nombreUsuario);
     }
@@ -124,22 +138,64 @@ public interface SolicitudApi {
      * @return Created (status code 201)
      *         or Bad Request (status code 400)
      */
+
     @Operation(
-        operationId = "solicitudSolicitarPost",
-        tags = { "Solicitud" },
-        responses = {
-            @ApiResponse(responseCode = "201", description = "Created", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = SolicitudResponse.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = SolicitudResponse.class)),
-                @Content(mediaType = "text/json", schema = @Schema(implementation = SolicitudResponse.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "text/json", schema = @Schema(implementation = ProblemDetails.class))
-            })
-        }
+            summary = "Crear una nueva solicitud de simulación",
+            description = """
+        Registra una solicitud de simulación en el sistema.
+        La solicitud queda en estado PROCESANDO y la simulación se ejecuta de forma asíncrona
+        sobre una cuadrícula 8x8 durante 10 pasos de tiempo.
+        Se devuelve un token único para consultar el estado y los resultados posteriormente.
+        """,
+            tags = {"Solicitud"}
     )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Solicitud creada correctamente. La simulación se está ejecutando en segundo plano.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = SolicitudResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Respuesta exitosa",
+                                    value = """
+                {
+                  "done": true,
+                  "tokenSolicitud": 47382,
+                  "data": true,
+                  "errorMessage": null
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "400",
+                    description = "Parámetros inválidos: nombreUsuario vacío o nulo, o cuerpo de solicitud malformado.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ProblemDetails.class),
+                            examples = @ExampleObject(
+                                    name = "Error de validación",
+                                    value = """
+                {
+                  "type": "about:blank",
+                  "title": "Bad Request",
+                  "status": 400,
+                  "detail": "El nombre de usuario no puede estar vacío",
+                  "instance": "/Solicitud/Solicitar"
+                }
+                """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Error interno del servidor al persistir la solicitud.",
+                    content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class))
+            )
+    })
+
     @RequestMapping(
         method = RequestMethod.POST,
         value = SolicitudApi.PATH_SOLICITUD_SOLICITAR_POST,
@@ -147,8 +203,9 @@ public interface SolicitudApi {
         consumes = { "application/json", "text/json", "application/*+json" }
     )
     default ResponseEntity<SolicitudResponse> solicitudSolicitarPost(
-        @Parameter(name = "nombreUsuario", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "nombreUsuario", required = false) @Nullable String nombreUsuario,
-        @Parameter(name = "Solicitud", description = "") @Valid @RequestBody(required = false) @Nullable Solicitud solicitud
+            @Parameter(name = "nombreUsuario", description = "Identificador del usuario que realiza la solicitud. No puede ser nulo ni vacío.", required = true, example = "usuario_test")
+            @Valid @RequestParam(value = "nombreUsuario", required = false) String nombreUsuario,
+            @Parameter(name = "Solicitud", description = "") @Valid @RequestBody(required = false) @Nullable Solicitud solicitud
     ) {
         return getDelegate().solicitudSolicitarPost(nombreUsuario, solicitud);
     }

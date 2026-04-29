@@ -16,6 +16,7 @@ import io.swagger.v3.oas.annotations.media.ArraySchema;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -41,38 +42,69 @@ public interface ResultadosApi {
     }
 
     String PATH_RESULTADOS_POST = "/Resultados";
-    /**
-     * POST /Resultados
-     *
-     * @param nombreUsuario  (optional)
-     * @param tok  (optional)
-     * @return Created (status code 201)
-     *         or Bad Request (status code 400)
-     */
+
     @Operation(
-        operationId = "resultadosPost",
-        tags = { "Resultados" },
-        responses = {
-            @ApiResponse(responseCode = "201", description = "Created", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = ResultsResponse.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ResultsResponse.class)),
-                @Content(mediaType = "text/json", schema = @Schema(implementation = ResultsResponse.class))
-            }),
-            @ApiResponse(responseCode = "400", description = "Bad Request", content = {
-                @Content(mediaType = "text/plain", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)),
-                @Content(mediaType = "text/json", schema = @Schema(implementation = ProblemDetails.class))
-            })
-        }
+            summary = "Obtener los resultados de una simulación finalizada",
+            description = """
+            Recupera los datos generados por la simulación correspondiente al token indicado.
+            Los datos se devuelven como una cadena CSV donde cada línea representa
+            una entidad en un instante de tiempo con el formato: t,y,x,color
+            Solo es posible obtener resultados si la simulación ha alcanzado el estado FINALIZADA.
+            El usuario solicitante debe ser el mismo que creó la solicitud.
+            """,
+            tags = {"Resultados"}
     )
+    @ApiResponses({
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "Resultados obtenidos correctamente.",
+                    content = @Content(
+                            mediaType = "application/json",
+                            schema = @Schema(implementation = ResultsResponse.class),
+                            examples = @ExampleObject(
+                                    name = "Resultados de simulación",
+                                    value = """
+                    {
+                      "done": true,
+                      "tokenSolicitud": 47382,
+                      "data": "0,3,5,red\\n0,1,2,yellow\\n1,4,5,red\\n1,2,3,yellow\\n...",
+                      "errorMessage": null
+                    }
+                    """
+                            )
+                    )
+            ),
+            @ApiResponse(
+                    responseCode = "201",
+                    description = "No se encontraron resultados (simulación aún en proceso o token incorrecto).",
+                    content = @Content(
+                            mediaType = "application/json",
+                            examples = @ExampleObject(
+                                    value = """
+                    {
+                      "done": false,
+                      "tokenSolicitud": null,
+                      "data": null,
+                      "errorMessage": "No se encontraron resultados para el token proporcionado"
+                    }
+                    """
+                            )
+                    )
+            ),
+            @ApiResponse(responseCode = "400", description = "Parámetros nombreUsuario o tok nulos/vacíos.", content = @Content(mediaType = "application/json", schema = @Schema(implementation = ProblemDetails.class)))
+    })
+    @Parameters({
+            @Parameter(name = "nombreUsuario", description = "Nombre del usuario propietario de la solicitud.", required = true, example = "usuario_test"),
+            @Parameter(name = "tok", description = "Token numérico de 5 dígitos de la solicitud.", required = true, example = "47382")
+    })
     @RequestMapping(
-        method = RequestMethod.POST,
-        value = ResultadosApi.PATH_RESULTADOS_POST,
-        produces = { "text/plain", "application/json", "text/json" }
+            method = RequestMethod.POST,
+            value = ResultadosApi.PATH_RESULTADOS_POST,
+            produces = { "text/plain", "application/json", "text/json" }
     )
     default ResponseEntity<ResultsResponse> resultadosPost(
-        @Parameter(name = "nombreUsuario", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "nombreUsuario", required = false) @Nullable String nombreUsuario,
-        @Parameter(name = "tok", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "tok", required = false) @Nullable Integer tok
+            @Parameter(name = "nombreUsuario", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "nombreUsuario", required = false) @Nullable String nombreUsuario,
+            @Parameter(name = "tok", description = "", in = ParameterIn.QUERY) @Valid @RequestParam(value = "tok", required = false) @Nullable Integer tok
     ) {
         return getDelegate().resultadosPost(nombreUsuario, tok);
     }
