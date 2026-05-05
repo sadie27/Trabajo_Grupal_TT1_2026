@@ -3,9 +3,11 @@ package org.trabajott1.service;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.trabajott1.persistence.entity.EntidadSolicitudEntity;
 import org.trabajott1.persistence.entity.ResultadoEntity;
 import org.trabajott1.persistence.entity.SolicitudEntity;
 import org.trabajott1.repository.SolicitudRepository;
+import org.trabajott1.repository.ResultadoRepository;
 
 import java.util.*;
 
@@ -17,11 +19,15 @@ public class SimulationService {
     private static final String[] COLORS = {"red", "yellow", "blue", "green", "purple", "orange", "pink"};
 
     private final SolicitudRepository solicitudRepository;
+    private final ResultadoRepository resultadoRepository;
 
-    public SimulationService(SolicitudRepository solicitudRepository) {
+    public SimulationService(SolicitudRepository solicitudRepository,
+                             ResultadoRepository resultadoRepository) {
         this.solicitudRepository = solicitudRepository;
+        this.resultadoRepository = resultadoRepository;
     }
 
+    /*
     @Async
     @Transactional
     public void runSimulationAsync(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
@@ -43,7 +49,69 @@ public class SimulationService {
             
             solicitudRepository.save(entity);
         }
+    }*/
+    @Async
+    public void runSimulationAsync(Long idSolicitud) {
+        try {
+            Thread.sleep(2000); // Delay para simular procesamiento
+
+            // 1. Buscar solicitud
+            SolicitudEntity solicitud = solicitudRepository.findById(idSolicitud)
+                    .orElseThrow(() -> new IllegalArgumentException("Solicitud no encontrada"));
+
+            // 2. Crear mapa de colores para especies
+            Map<String, String> speciesColors = new HashMap<>();
+            String[] colors = {"RED", "BLUE", "GREEN", "YELLOW", "PURPLE", "CYAN", "ORANGE"};
+            List<String> species = solicitud.getEntidades().stream()
+                    .map(EntidadSolicitudEntity::getNombreEntidad)
+                    .toList();
+            for (int i = 0; i < species.size(); i++) {
+                speciesColors.put(species.get(i), colors[i % colors.length]);
+            }
+
+            // 3. Crear células iniciales
+            List<CellularAutomatonEngine.Cell> initialCells = new ArrayList<>();
+            Random rand = new Random();
+            List<EntidadSolicitudEntity> entidades = solicitud.getEntidades();
+
+            for (EntidadSolicitudEntity entidad : entidades) {
+                for (int i = 0; i < entidad.getCantidadInicial(); i++) {
+                    int x = rand.nextInt(8);
+                    int y = rand.nextInt(8);
+                    initialCells.add(
+                            new CellularAutomatonEngine.Cell(
+                                    x, y,
+                                    entidad.getNombreEntidad(),
+                                    speciesColors.get(entidad.getNombreEntidad())
+                            )
+                    );
+                }
+            }
+
+            // 4. Ejecutar simulación
+            CellularAutomatonEngine engine = new CellularAutomatonEngine(initialCells, speciesColors);
+            StringBuilder resultados = new StringBuilder("time,y,x,color\n");
+
+            for (int timeStep = 0; timeStep < 10; timeStep++) {
+                resultados.append(engine.exportToCSV(timeStep)).append("\n");
+                engine.step();
+            }
+
+            // 5. Guardar resultado
+            ResultadoEntity resultado = new ResultadoEntity();
+            resultado.setSolicitud(solicitud);
+            resultado.setDatosResultado(resultados.toString());
+            resultadoRepository.save(resultado);
+
+            // 6. Marcar como finalizada
+            solicitud.setEstado("FINALIZADA");
+            solicitudRepository.save(solicitud);
+
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
     }
+
 
     private String generateSimulationData(List<String> entityNames, List<Integer> initialQuantities) {
         StringBuilder sb = new StringBuilder();

@@ -80,7 +80,7 @@ public class SolicitudService {
 
         // Iniciar simulación asíncrona
         if (nombres != null && cantidades != null) {
-            simulationService.runSimulationAsync(savedEntity.getIdSolicitud(), nombres, cantidades);
+            simulationService.runSimulationAsync(savedEntity.getIdSolicitud().longValue());
         }
 
         return new SolicitudResponse()

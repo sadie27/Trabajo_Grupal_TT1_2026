@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Optional;
 
 @Repository
-public interface SolicitudRepository extends JpaRepository<SolicitudEntity, Integer> {
+public interface SolicitudRepository extends JpaRepository<SolicitudEntity, Long> {
     Optional<SolicitudEntity> findByTokenSolicitud(Integer tokenSolicitud);
     List<SolicitudEntity> findByNombreUsuario(String nombreUsuario);
 }
