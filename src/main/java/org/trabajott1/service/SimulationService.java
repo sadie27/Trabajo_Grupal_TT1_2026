@@ -1,6 +1,7 @@
 package org.trabajott1.service;
 
-import org.springframework.scheduling.annotation.Async;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.trabajott1.persistence.entity.ResultadoEntity;
@@ -12,9 +13,28 @@ import java.util.*;
 @Service
 public class SimulationService {
 
+    private static final Logger log = LoggerFactory.getLogger(SimulationService.class);
     private static final int GRID_SIZE = 8;
     private static final int MAX_TIME = 10;
-    private static final String[] COLORS = {"red", "yellow", "blue", "green", "purple", "orange", "pink"};
+    private static final String[] COLORS = {"red", "blue", "green", "yellow"};
+
+    private static class Cell {
+        String name;
+        String color;
+        boolean hasEaten;
+
+        Cell(String name, String color) {
+            this.name = name;
+            this.color = color;
+            this.hasEaten = false;
+        }
+
+        Cell copy() {
+            Cell c = new Cell(name, color);
+            c.hasEaten = this.hasEaten;
+            return c;
+        }
+    }
 
     private final SolicitudRepository solicitudRepository;
 
@@ -22,10 +42,9 @@ public class SimulationService {
         this.solicitudRepository = solicitudRepository;
     }
 
-    @Async
     @Transactional
-    public void runSimulationAsync(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
-        // Simulamos un pequeño retraso para que se note la asincronía
+    public void executeSimulation(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
+        // Simulamos carga de trabajo
         try { Thread.sleep(5000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
 
         String resultadoSimulacion = generateSimulationData(entityNames, initialQuantities);
@@ -45,46 +64,105 @@ public class SimulationService {
         }
     }
 
+    private boolean canEat(String color1, String color2) {
+        int i1 = -1, i2 = -1;
+        for (int i = 0; i < COLORS.length; i++) {
+            if (COLORS[i].equals(color1)) i1 = i;
+            if (COLORS[i].equals(color2)) i2 = i;
+        }
+        return (i1 != -1 && i2 != -1) && (i1 + 1) % COLORS.length == i2;
+    }
+
     private String generateSimulationData(List<String> entityNames, List<Integer> initialQuantities) {
         StringBuilder sb = new StringBuilder();
         sb.append(GRID_SIZE).append("\n");
 
         Map<String, String> colorMap = new HashMap<>();
-        for (int i = 0; i < entityNames.size(); i++) {
-            colorMap.put(entityNames.get(i), COLORS[i % COLORS.length]);
+        int numSpecies = Math.min(entityNames.size(), COLORS.length);
+        for (int i = 0; i < numSpecies; i++) {
+            colorMap.put(entityNames.get(i), COLORS[i]);
         }
 
-        String[][] grid = new String[GRID_SIZE][GRID_SIZE];
+        Cell[][] grid = new Cell[GRID_SIZE][GRID_SIZE];
         Random rand = new Random();
 
         // Tiempo 0
-        for (int i = 0; i < entityNames.size(); i++) {
+        int totalPlaced = 0;
+        int maxSpots = GRID_SIZE * GRID_SIZE;
+        for (int i = 0; i < numSpecies; i++) {
             String name = entityNames.get(i);
             int count = initialQuantities.get(i);
+            String color = colorMap.get(name);
             for (int j = 0; j < count; j++) {
-                int x = rand.nextInt(GRID_SIZE);
-                int y = rand.nextInt(GRID_SIZE);
+                if (totalPlaced >= maxSpots) break;
+                
+                int x, y;
+                int attempts = 0;
+                do {
+                    x = rand.nextInt(GRID_SIZE);
+                    y = rand.nextInt(GRID_SIZE);
+                    attempts++;
+                } while (grid[y][x] != null && attempts < maxSpots);
+
                 if (grid[y][x] == null) {
-                    grid[y][x] = name;
-                    appendCell(sb, 0, y, x, colorMap.get(name));
+                    grid[y][x] = new Cell(name, color);
+                    appendCell(sb, 0, y, x, color);
+                    totalPlaced++;
+                } else {
+                    // If random search fails, find the first available spot
+                    boolean found = false;
+                    for (int r = 0; r < GRID_SIZE && !found; r++) {
+                        for (int c = 0; c < GRID_SIZE && !found; c++) {
+                            if (grid[r][c] == null) {
+                                grid[r][c] = new Cell(name, color);
+                                appendCell(sb, 0, r, c, color);
+                                totalPlaced++;
+                                found = true;
+                            }
+                        }
+                    }
                 }
             }
         }
 
         // Tiempos 1..MAX_TIME
         for (int t = 1; t <= MAX_TIME; t++) {
-            String[][] nextGrid = new String[GRID_SIZE][GRID_SIZE];
+            Cell[][] nextGrid = new Cell[GRID_SIZE][GRID_SIZE];
             for (int y = 0; y < GRID_SIZE; y++) {
                 for (int x = 0; x < GRID_SIZE; x++) {
                     if (grid[y][x] != null) {
+                        Cell current = grid[y][x];
                         int nextX = Math.max(0, Math.min(GRID_SIZE - 1, x + rand.nextInt(3) - 1));
                         int nextY = Math.max(0, Math.min(GRID_SIZE - 1, y + rand.nextInt(3) - 1));
+                        
                         if (nextGrid[nextY][nextX] == null) {
-                            nextGrid[nextY][nextX] = grid[y][x];
-                        } else if (!nextGrid[nextY][nextX].equals(grid[y][x])) {
-                            if (rand.nextBoolean()) nextGrid[nextY][nextX] = grid[y][x];
+                            nextGrid[nextY][nextX] = current.copy();
                         } else {
-                            reproducir(nextGrid, grid[y][x], nextX, nextY);
+                            Cell occupant = nextGrid[nextY][nextX];
+                            if (!occupant.name.equals(current.name)) {
+                                // Different species - Food chain hierarchy
+                                if (canEat(current.color, occupant.color)) {
+                                    log.info("Comer: {} ({}) se comió a {} ({}) en [{}, {}]", current.name, current.color, occupant.name, occupant.color, nextY, nextX);
+                                    Cell winner = current.copy();
+                                    winner.hasEaten = true;
+                                    nextGrid[nextY][nextX] = winner;
+                                } else if (canEat(occupant.color, current.color)) {
+                                    log.info("Comer: {} ({}) se comió a {} ({}) en [{}, {}]", occupant.name, occupant.color, current.name, current.color, nextY, nextX);
+                                    occupant.hasEaten = true;
+                                } else {
+                                    // Neither eats, random tie-breaker
+                                    if (rand.nextBoolean()) nextGrid[nextY][nextX] = current.copy();
+                                }
+                            } else {
+                                // Same species - Reproduction only if one has eaten
+                                if (current.hasEaten) {
+                                    reproducir(nextGrid, current, nextX, nextY);
+                                    occupant.hasEaten = false;
+                                } else if (occupant.hasEaten) {
+                                    reproducir(nextGrid, occupant, nextX, nextY);
+                                    occupant.hasEaten = false;
+                                }
+                            }
                         }
                     }
                 }
@@ -93,7 +171,7 @@ public class SimulationService {
             for (int y = 0; y < GRID_SIZE; y++) {
                 for (int x = 0; x < GRID_SIZE; x++) {
                     if (grid[y][x] != null) {
-                        appendCell(sb, t, y, x, colorMap.get(grid[y][x]));
+                        appendCell(sb, t, y, x, grid[y][x].color);
                     }
                 }
             }
@@ -101,14 +179,18 @@ public class SimulationService {
         return sb.toString();
     }
 
-    private void reproducir(String[][] grid, String name, int x, int y) {
+    private void reproducir(Cell[][] grid, Cell parent, int x, int y) {
         Random rand = new Random();
         int rx = Math.max(0, Math.min(GRID_SIZE - 1, x + rand.nextInt(3) - 1));
         int ry = Math.max(0, Math.min(GRID_SIZE - 1, y + rand.nextInt(3) - 1));
-        if (grid[ry][rx] == null) grid[ry][rx] = name;
+        if (grid[ry][rx] == null) {
+            grid[ry][rx] = new Cell(parent.name, parent.color);
+            log.info("Reproducción: Célula {} ({}) nació en [{}, {}]", parent.name, parent.color, ry, rx);
+        }
     }
 
     private void appendCell(StringBuilder sb, int t, int y, int x, String color) {
+        log.info("Append: T={}, Pos=[{}, {}], Color={}", t, y, x, color);
         sb.append(t).append(",").append(y).append(",").append(x).append(",").append(color).append("\n");
     }
 }

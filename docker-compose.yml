@@ -22,6 +22,23 @@ services:
       timeout: 20s
       retries: 10
 
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: solicitudes_rabbitmq
+    restart: always
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    networks:
+      - solicitudes_network
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "check_running"]
+      timeout: 30s
+      retries: 5
+
   app:
     build: .
     container_name: solicitudes_app
@@ -32,8 +49,14 @@ services:
       SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/solicitudes_db
       SPRING_DATASOURCE_USERNAME: solicitudes_user
       SPRING_DATASOURCE_PASSWORD: solicitudes_pass
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
     depends_on:
       mysql:
+        condition: service_healthy
+      rabbitmq:
         condition: service_healthy
     networks:
       - solicitudes_network
