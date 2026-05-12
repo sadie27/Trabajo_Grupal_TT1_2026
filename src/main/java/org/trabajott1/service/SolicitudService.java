@@ -100,7 +100,14 @@ public class SolicitudService {
         SolicitudEntity entity = new SolicitudEntity();
         entity.setNombreUsuario(nombreUsuario);
         
-        int tokenGenerado = 10000 + new Random().nextInt(90000);
+        int tokenGenerado;
+        Random random = new Random();
+        boolean unico;
+        do {
+            tokenGenerado = 10000 + random.nextInt(90000);
+            unico = solicitudRepository.findByTokenSolicitud(tokenGenerado).isEmpty();
+        } while (!unico);
+        
         entity.setTokenSolicitud(tokenGenerado);
         entity.setEstado("PROCESANDO");
 

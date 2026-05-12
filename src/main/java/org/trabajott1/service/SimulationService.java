@@ -169,13 +169,15 @@ public class SimulationService {
                                     if (rand.nextBoolean()) nextGrid[nextY][nextX] = current.copy();
                                 }
                             } else {
-                                // Same species - Reproduction only if one has eaten
+                                // Misma especie - Reproducción solo si uno ha comido
                                 if (current.hasEaten) {
-                                    reproducir(nextGrid, current, nextX, nextY);
-                                    occupant.hasEaten = false;
+                                    if (reproducir(nextGrid, current, nextX, nextY)) {
+                                        current.hasEaten = false;
+                                    }
                                 } else if (occupant.hasEaten) {
-                                    reproducir(nextGrid, occupant, nextX, nextY);
-                                    occupant.hasEaten = false;
+                                    if (reproducir(nextGrid, occupant, nextX, nextY)) {
+                                        occupant.hasEaten = false;
+                                    }
                                 }
                             }
                         }
@@ -194,14 +196,27 @@ public class SimulationService {
         return sb.toString();
     }
 
-    private void reproducir(Cell[][] grid, Cell parent, int x, int y) {
-        Random rand = new Random();
-        int rx = Math.max(0, Math.min(GRID_SIZE - 1, x + rand.nextInt(3) - 1));
-        int ry = Math.max(0, Math.min(GRID_SIZE - 1, y + rand.nextInt(3) - 1));
-        if (grid[ry][rx] == null) {
-            grid[ry][rx] = new Cell(parent.name, parent.color);
-            log.info("Reproducción: Célula {} ({}) nació en [{}, {}]", parent.name, parent.color, ry, rx);
+    private boolean reproducir(Cell[][] grid, Cell parent, int x, int y) {
+        List<int[]> neighbors = new ArrayList<>();
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) continue;
+                int nx = x + i;
+                int ny = y + j;
+                if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
+                    neighbors.add(new int[]{nx, ny});
+                }
+            }
         }
+        Collections.shuffle(neighbors);
+        for (int[] pos : neighbors) {
+            if (grid[pos[1]][pos[0]] == null) {
+                grid[pos[1]][pos[0]] = new Cell(parent.name, parent.color);
+                log.info("Reproducción: Célula {} ({}) nació en [{}, {}]", parent.name, parent.color, pos[1], pos[0]);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void appendCell(StringBuilder sb, int t, int y, int x, String color) {
