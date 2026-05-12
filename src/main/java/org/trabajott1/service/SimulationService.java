@@ -10,6 +10,9 @@ import org.trabajott1.repository.SolicitudRepository;
 
 import java.util.*;
 
+/**
+ * Servicio encargado de ejecutar la simulación de vida artificial.
+ */
 @Service
 public class SimulationService {
 
@@ -38,10 +41,22 @@ public class SimulationService {
 
     private final SolicitudRepository solicitudRepository;
 
+    /**
+     * Constructor de SimulationService.
+     *
+     * @param solicitudRepository El repositorio para acceder a los datos de las solicitudes.
+     */
     public SimulationService(SolicitudRepository solicitudRepository) {
         this.solicitudRepository = solicitudRepository;
     }
 
+    /**
+     * Ejecuta el proceso de simulación y guarda los resultados en la base de datos.
+     *
+     * @param solicitudId       El ID de la solicitud.
+     * @param entityNames      Lista de nombres de las entidades participantes.
+     * @param initialQuantities Lista de cantidades iniciales de cada entidad.
+     */
     @Transactional
     public void executeSimulation(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
         // Simulamos carga de trabajo

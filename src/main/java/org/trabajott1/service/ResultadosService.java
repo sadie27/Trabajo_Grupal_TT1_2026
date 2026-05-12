@@ -7,15 +7,31 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+/**
+ * Servicio para gestionar la obtención de resultados de las simulaciones.
+ */
 @Service
 public class ResultadosService {
 
     private final ResultadoRepository resultadoRepository;
 
+    /**
+     * Constructor de ResultadosService.
+     *
+     * @param resultadoRepository El repositorio para acceder a los datos de los resultados.
+     */
     public ResultadosService(ResultadoRepository resultadoRepository) {
         this.resultadoRepository = resultadoRepository;
     }
 
+    /**
+     * Obtiene los resultados de una simulación para un usuario y token específicos.
+     *
+     * @param nombreUsuario El nombre del usuario.
+     * @param tok           El token de la solicitud.
+     * @return Un objeto ResultsResponse con los resultados o un mensaje de error.
+     * @throws IllegalArgumentException Si el nombre de usuario o el token son obligatorios pero no se proporcionan.
+     */
     public ResultsResponse obtenerResultados(String nombreUsuario, Integer tok) {
         if (nombreUsuario == null || nombreUsuario.isEmpty()) {
             throw new IllegalArgumentException("El nombre de usuario es obligatorio");

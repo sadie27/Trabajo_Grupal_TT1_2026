@@ -7,16 +7,29 @@ import org.springframework.stereotype.Component;
 import org.trabajott1.configuration.RabbitMQConfig;
 import org.trabajott1.model.SimulationMessage;
 
+/**
+ * Componente que escucha mensajes de la cola de RabbitMQ para procesar simulaciones.
+ */
 @Component
 public class SimulationListener {
 
     private static final Logger log = LoggerFactory.getLogger(SimulationListener.class);
     private final SimulationService simulationService;
 
+    /**
+     * Constructor de SimulationListener.
+     *
+     * @param simulationService El servicio de simulación a utilizar.
+     */
     public SimulationListener(SimulationService simulationService) {
         this.simulationService = simulationService;
     }
 
+    /**
+     * Procesa un mensaje de simulación recibido de la cola.
+     *
+     * @param message El mensaje que contiene los datos para la simulación.
+     */
     @RabbitListener(queues = RabbitMQConfig.SIMULATION_QUEUE)
     public void receiveMessage(SimulationMessage message) {
         log.info("Recibida tarea de simulación para solicitud ID: {}", message.getSolicitudId());
