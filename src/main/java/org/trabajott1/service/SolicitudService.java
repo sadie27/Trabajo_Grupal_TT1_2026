@@ -1,6 +1,9 @@
 package org.trabajott1.service;
 
+import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.transaction.annotation.Transactional;
+import org.trabajott1.configuration.RabbitMQConfig;
+import org.trabajott1.model.SimulationMessage;
 import org.trabajott1.model.Solicitud;
 import org.trabajott1.model.SolicitudResponse;
 import org.trabajott1.persistence.entity.SolicitudEntity;
@@ -16,11 +19,11 @@ import java.util.stream.Collectors;
 public class SolicitudService {
 
     private final SolicitudRepository solicitudRepository;
-    private final SimulationService simulationService;
+    private final RabbitTemplate rabbitTemplate;
 
-    public SolicitudService(SolicitudRepository solicitudRepository, SimulationService simulationService) {
+    public SolicitudService(SolicitudRepository solicitudRepository, RabbitTemplate rabbitTemplate) {
         this.solicitudRepository = solicitudRepository;
-        this.simulationService = simulationService;
+        this.rabbitTemplate = rabbitTemplate;
     }
 
     public List<Integer> comprobarSolicitud(String nombreUsuario, Integer tok) {
@@ -34,7 +37,6 @@ public class SolicitudService {
         Optional<SolicitudEntity> solicitud = solicitudRepository.findByTokenSolicitud(tok);
         
         if (solicitud.isPresent() && solicitud.get().getNombreUsuario().equals(nombreUsuario)) {
-            // Si el estado es FINALIZADA, devolvemos [1, 0], de lo contrario [0, 1] (procesando) o [0, 0]
             if ("FINALIZADA".equals(solicitud.get().getEstado())) {
                 return List.of(1, 0);
             } else {
@@ -75,12 +77,12 @@ public class SolicitudService {
         
         entity.addEntidades(nombres, cantidades);
 
-        // Guardar solicitud inicial
         final SolicitudEntity savedEntity = solicitudRepository.save(entity);
 
-        // Iniciar simulación asíncrona
+        // Enviar a RabbitMQ en lugar de llamar al servicio asíncrono directamente
         if (nombres != null && cantidades != null) {
-            simulationService.runSimulationAsync(savedEntity.getIdSolicitud(), nombres, cantidades);
+            SimulationMessage message = new SimulationMessage(savedEntity.getIdSolicitud(), nombres, cantidades);
+            rabbitTemplate.convertAndSend(RabbitMQConfig.SIMULATION_EXCHANGE, RabbitMQConfig.SIMULATION_ROUTING_KEY, message);
         }
 
         return new SolicitudResponse()
