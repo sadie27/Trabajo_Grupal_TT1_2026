@@ -19,11 +19,15 @@ public class ResultadosApiDelegateImpl implements ResultadosApiDelegate {
 
     @Override
     public ResponseEntity<ResultsResponse> resultadosPost(String nombreUsuario, Integer tok) {
-        ResultsResponse response = resultadosService.obtenerResultados(nombreUsuario, tok);
+        try {
+            ResultsResponse response = resultadosService.obtenerResultados(nombreUsuario, tok);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

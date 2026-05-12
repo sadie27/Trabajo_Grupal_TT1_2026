@@ -225,3 +225,4 @@ $RECYCLE.BIN/
 
 target/
 docs/
+.m2/

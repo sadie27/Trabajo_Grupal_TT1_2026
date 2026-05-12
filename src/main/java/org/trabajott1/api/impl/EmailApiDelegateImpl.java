@@ -19,11 +19,15 @@ public class EmailApiDelegateImpl implements EmailApiDelegate {
 
     @Override
     public ResponseEntity<EmailResponse> emailPost(String emailAddress, String message) {
-        EmailResponse response = emailService.send(emailAddress, message);
+        try {
+            EmailResponse response = emailService.send(emailAddress, message);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }

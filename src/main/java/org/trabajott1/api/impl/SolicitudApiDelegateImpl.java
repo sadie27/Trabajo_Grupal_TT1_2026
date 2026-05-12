@@ -22,31 +22,43 @@ public class SolicitudApiDelegateImpl implements SolicitudApiDelegate {
 
     @Override
     public ResponseEntity<List<Integer>> solicitudComprobarSolicitudGet(String nombreUsuario, Integer tok) {
-        List<Integer> result = solicitudService.comprobarSolicitud(nombreUsuario, tok);
+        try {
+            List<Integer> result = solicitudService.comprobarSolicitud(nombreUsuario, tok);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(result);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @Override
     public ResponseEntity<List<Integer>> solicitudGetSolicitudesUsuarioGet(String nombreUsuario) {
-        List<Integer> result = solicitudService.getSolicitudesUsuario(nombreUsuario);
+        try {
+            List<Integer> result = solicitudService.getSolicitudesUsuario(nombreUsuario);
 
-        return ResponseEntity
-                .status(HttpStatus.OK)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(result);
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(result);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 
     @Override
     public ResponseEntity<SolicitudResponse> solicitudSolicitarPost(String nombreUsuario, Solicitud solicitud) {
-        SolicitudResponse response = solicitudService.crearSolicitud(nombreUsuario, solicitud);
+        try {
+            SolicitudResponse response = solicitudService.crearSolicitud(nombreUsuario, solicitud);
 
-        return ResponseEntity
-                .status(HttpStatus.CREATED)
-                .contentType(MediaType.APPLICATION_JSON)
-                .body(response);
+            return ResponseEntity
+                    .status(HttpStatus.CREATED)
+                    .contentType(MediaType.APPLICATION_JSON)
+                    .body(response);
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity.badRequest().build();
+        }
     }
 }
