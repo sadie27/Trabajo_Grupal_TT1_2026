@@ -165,8 +165,8 @@ public class SimulationService {
                                     log.info("Comer: {} ({}) se comió a {} ({}) en [{}, {}]", occupant.name, occupant.color, current.name, current.color, nextY, nextX);
                                     occupant.hasEaten = true;
                                 } else {
-                                    // Ninguno come, desempate aleatorio
-                                    if (rand.nextBoolean()) nextGrid[nextY][nextX] = current.copy();
+                                    // Ninguno come, ambos sobreviven
+                                    placeInFreeSpot(nextGrid, current, nextX, nextY);
                                 }
                             } else {
                                 // Misma especie - Reproducción solo si uno ha comido
@@ -179,6 +179,7 @@ public class SimulationService {
                                         occupant.hasEaten = false;
                                     }
                                 }
+                                placeInFreeSpot(nextGrid, current, nextX, nextY);
                             }
                         }
                     }
@@ -194,6 +195,40 @@ public class SimulationService {
             }
         }
         return sb.toString();
+    }
+
+    private void placeInFreeSpot(Cell[][] grid, Cell cell, int x, int y) {
+        if (grid[y][x] == null) {
+            grid[y][x] = cell.copy();
+            return;
+        }
+        List<int[]> neighbors = new ArrayList<>();
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) continue;
+                int nx = x + i;
+                int ny = y + j;
+                if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
+                    neighbors.add(new int[]{nx, ny});
+                }
+            }
+        }
+        Collections.shuffle(neighbors);
+        for (int[] pos : neighbors) {
+            if (grid[pos[1]][pos[0]] == null) {
+                grid[pos[1]][pos[0]] = cell.copy();
+                return;
+            }
+        }
+        // Si no hay sitio cerca, buscamos en toda la rejilla como último recurso
+        for (int r = 0; r < GRID_SIZE; r++) {
+            for (int c = 0; c < GRID_SIZE; c++) {
+                if (grid[r][c] == null) {
+                    grid[r][c] = cell.copy();
+                    return;
+                }
+            }
+        }
     }
 
     private boolean reproducir(Cell[][] grid, Cell parent, int x, int y) {
