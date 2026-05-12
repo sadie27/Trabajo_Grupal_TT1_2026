@@ -40,7 +40,7 @@ class SimulationListenerTest {
         doThrow(new RuntimeException("Simulated error"))
                 .when(simulationService).executeSimulation(anyInt(), anyList(), anyList());
 
-        // Should not throw exception
+        // No debería lanzar excepción
         simulationListener.receiveMessage(message);
 
         verify(simulationService).executeSimulation(anyInt(), anyList(), anyList());

@@ -124,7 +124,7 @@ public class SimulationService {
                     appendCell(sb, 0, y, x, color);
                     totalPlaced++;
                 } else {
-                    // If random search fails, find the first available spot
+                    // Si la búsqueda aleatoria falla, encuentra el primer lugar disponible
                     boolean found = false;
                     for (int r = 0; r < GRID_SIZE && !found; r++) {
                         for (int c = 0; c < GRID_SIZE && !found; c++) {
@@ -155,7 +155,7 @@ public class SimulationService {
                         } else {
                             Cell occupant = nextGrid[nextY][nextX];
                             if (!occupant.name.equals(current.name)) {
-                                // Different species - Food chain hierarchy
+                                // Diferentes especies - Jerarquía de la cadena alimentaria
                                 if (canEat(current.color, occupant.color)) {
                                     log.info("Comer: {} ({}) se comió a {} ({}) en [{}, {}]", current.name, current.color, occupant.name, occupant.color, nextY, nextX);
                                     Cell winner = current.copy();
@@ -165,7 +165,7 @@ public class SimulationService {
                                     log.info("Comer: {} ({}) se comió a {} ({}) en [{}, {}]", occupant.name, occupant.color, current.name, current.color, nextY, nextX);
                                     occupant.hasEaten = true;
                                 } else {
-                                    // Neither eats, random tie-breaker
+                                    // Ninguno come, desempate aleatorio
                                     if (rand.nextBoolean()) nextGrid[nextY][nextX] = current.copy();
                                 }
                             } else {
