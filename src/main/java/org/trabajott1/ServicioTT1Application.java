@@ -9,6 +9,9 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.FullyQualifiedAnnotationBeanNameGenerator;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+/**
+ * Clase principal de la aplicación Spring Boot.
+ */
 @SpringBootApplication(
         nameGenerator = FullyQualifiedAnnotationBeanNameGenerator.class
 )
@@ -19,10 +22,18 @@ import org.springframework.scheduling.annotation.EnableAsync;
 )
 public class ServicioTT1Application {
 
+    /**
+     * Punto de entrada principal de la aplicación.
+     * @param args Argumentos de la línea de comandos.
+     */
     public static void main(String[] args) {
         SpringApplication.run(ServicioTT1Application.class, args);
     }
 
+    /**
+     * Bean para el manejo de tipos JsonNullable de OpenAPI.
+     * @return Módulo de Jackson para JsonNullable.
+     */
     @Bean(name = "org.trabajott1.ServicioTT1Application.jsonNullableModule")
     public Module jsonNullableModule() {
         return new JsonNullableModule();

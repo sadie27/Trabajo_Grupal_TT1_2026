@@ -11,10 +11,13 @@ tags:
 paths:
   /Email:
     post:
+      summary: Enviar email
+      description: Permite enviar un email con un mensaje específico.
       parameters:
       - explode: true
         in: query
         name: emailAddress
+        description: Dirección de correo electrónico
         required: false
         schema:
           type: string
@@ -22,6 +25,7 @@ paths:
       - explode: true
         in: query
         name: message
+        description: Contenido del mensaje a enviar
         required: false
         schema:
           type: string
@@ -61,10 +65,13 @@ paths:
       - tag: Email
   /Resultados:
     post:
+      summary: Obtener Resultados
+      description: Recupera los resultados de una simulación finalizada
       parameters:
       - explode: true
         in: query
         name: nombreUsuario
+        description: Nombre del usuario que solicita los resultados
         required: false
         schema:
           type: string
@@ -72,6 +79,7 @@ paths:
       - explode: true
         in: query
         name: tok
+        description: Token de la solicitud a consultar
         required: false
         schema:
           format: int32
@@ -112,15 +120,19 @@ paths:
       - tag: Resultados
   /Solicitud/Solicitar:
     post:
+      summary: Crear Solicitud
+      description: Crea una nueva solicitud de simulación
       parameters:
       - explode: true
         in: query
         name: nombreUsuario
+        description: Nombre del usuario creador
         required: false
         schema:
           type: string
         style: form
       requestBody:
+        description: Detalles de la simulación
         content:
           application/json:
             schema:
@@ -167,10 +179,13 @@ paths:
       - tag: Solicitud
   /Solicitud/GetSolicitudesUsuario:
     get:
+      summary: Listar Solicitudes
+      description: Devuelve la lista de solicitudes de un usuario
       parameters:
       - explode: true
         in: query
         name: nombreUsuario
+        description: Nombre del usuario
         required: false
         schema:
           type: string
@@ -219,10 +234,13 @@ paths:
       - tag: Solicitud
   /Solicitud/ComprobarSolicitud:
     get:
+      summary: Comprobar Solicitud
+      description: Verifica el estado de una solicitud
       parameters:
       - explode: true
         in: query
         name: nombreUsuario
+        description: Nombre del usuario
         required: false
         schema:
           type: string
@@ -230,6 +248,7 @@ paths:
       - explode: true
         in: query
         name: tok
+        description: Token de la solicitud
         required: false
         schema:
           format: int32

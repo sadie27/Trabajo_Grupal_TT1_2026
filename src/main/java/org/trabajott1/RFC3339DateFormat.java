@@ -9,6 +9,9 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
+/**
+ * Formateador de fechas siguiendo el estándar RFC3339 para la API.
+ */
 public class RFC3339DateFormat extends DateFormat {
     private static final long serialVersionUID = 1L;
     private static final TimeZone TIMEZONE_Z = TimeZone.getTimeZone("UTC");
@@ -17,6 +20,9 @@ public class RFC3339DateFormat extends DateFormat {
             .withTimeZone(TIMEZONE_Z)
             .withColonInTimeZone(true);
 
+    /**
+     * Constructor por defecto.
+     */
     public RFC3339DateFormat() {
         this.calendar = new GregorianCalendar();
     }

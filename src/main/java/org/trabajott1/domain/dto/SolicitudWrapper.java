@@ -13,10 +13,20 @@ public class SolicitudWrapper {
     @JsonProperty("solicitud")
     private Solicitud solicitud;
 
+    /**
+     * Obtiene la solicitud contenida en el wrapper.
+     *
+     * @return El objeto {@link Solicitud}.
+     */
     public Solicitud getSolicitud() {
         return solicitud;
     }
 
+    /**
+     * Establece la solicitud en el wrapper.
+     *
+     * @param solicitud El objeto {@link Solicitud} a establecer.
+     */
     public void setSolicitud(Solicitud solicitud) {
         this.solicitud = solicitud;
     }
