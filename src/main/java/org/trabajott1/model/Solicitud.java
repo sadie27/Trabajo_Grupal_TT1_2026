@@ -1,6 +1,7 @@
 package org.trabajott1.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
@@ -17,6 +18,7 @@ import java.util.Objects;
  */
 
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
+@JsonDeserialize(using = SolicitudDeserializer.class)
 public class Solicitud {
 
     @Valid

@@ -34,6 +34,11 @@ public class SimulationListener {
     public void receiveMessage(SimulationMessage message) {
         log.info("Recibida tarea de simulación para solicitud ID: {}", message.getSolicitudId());
         try {
+            Thread.sleep(5000);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+        }
+        try {
             simulationService.executeSimulation(
                 message.getSolicitudId(),
                 message.getEntityNames(),

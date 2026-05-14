@@ -19,7 +19,7 @@ public class SimulationService {
     private static final Logger log = LoggerFactory.getLogger(SimulationService.class);
     private static final int GRID_SIZE = 8;
     private static final int MAX_TIME = 10;
-    private static final String[] COLORS = {"red", "blue", "green", "yellow"};
+    private static final String[] COLORS = {"red", "blue", "green", "yellow", "orange", "purple"};
 
     private static class Cell {
         String name;
@@ -59,8 +59,9 @@ public class SimulationService {
      */
     @Transactional
     public void executeSimulation(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
-        // Simulamos carga de trabajo
-        try { Thread.sleep(5000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        if (entityNames.size() < 2 || entityNames.size() > 6) {
+            throw new IllegalArgumentException("El número de entidades debe estar entre 2 y 6, se recibieron: " + entityNames.size());
+        }
 
         String resultadoSimulacion = generateSimulationData(entityNames, initialQuantities);
 
@@ -93,7 +94,10 @@ public class SimulationService {
         sb.append(GRID_SIZE).append("\n");
 
         Map<String, String> colorMap = new HashMap<>();
-        int numSpecies = Math.min(entityNames.size(), COLORS.length);
+        if (entityNames.size() < 2 || entityNames.size() > 6) {
+            throw new IllegalArgumentException("El número de entidades debe estar entre 2 y 6, se recibieron: " + entityNames.size());
+        }
+        int numSpecies = Math.min(entityNames.size(), 6);
         for (int i = 0; i < numSpecies; i++) {
             colorMap.put(entityNames.get(i), COLORS[i]);
         }
