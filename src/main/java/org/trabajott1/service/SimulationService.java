@@ -59,8 +59,8 @@ public class SimulationService {
      */
     @Transactional
     public void executeSimulation(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
-        if (entityNames.size() < 2 || entityNames.size() > 6) {
-            throw new IllegalArgumentException("El número de entidades debe estar entre 2 y 6, se recibieron: " + entityNames.size());
+        if (entityNames.size() < 1 || entityNames.size() > 6) {
+            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 6, se recibieron: " + entityNames.size());
         }
 
         String resultadoSimulacion = generateSimulationData(entityNames, initialQuantities);
@@ -94,8 +94,8 @@ public class SimulationService {
         sb.append(GRID_SIZE).append("\n");
 
         Map<String, String> colorMap = new HashMap<>();
-        if (entityNames.size() < 2 || entityNames.size() > 6) {
-            throw new IllegalArgumentException("El número de entidades debe estar entre 2 y 6, se recibieron: " + entityNames.size());
+        if (entityNames.size() < 1 || entityNames.size() > 6) {
+            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 6, se recibieron: " + entityNames.size());
         }
         int numSpecies = Math.min(entityNames.size(), 6);
         for (int i = 0; i < numSpecies; i++) {
