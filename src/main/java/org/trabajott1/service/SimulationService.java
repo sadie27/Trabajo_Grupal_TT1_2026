@@ -11,27 +11,60 @@ import org.trabajott1.repository.SolicitudRepository;
 import java.util.*;
 
 /**
- * Servicio encargado de ejecutar la simulación de vida artificial.
+ * Servicio encargado de ejecutar la simulación de vida artificial basada en autómatas celulares.
+ * Las entidades (especies) se colocan en un grid de 8x8, se mueven aleatoriamente en cada paso de tiempo,
+ * se comen entre ellas según una jerarquía por colores (cada color come al siguiente en la lista)
+ * y se reproducen cuando una célula ha comido y colisiona con otra de su misma especie.
+ * El resultado se serializa como texto y se guarda en la base de datos asociado a la solicitud.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Service
 public class SimulationService {
 
     private static final Logger log = LoggerFactory.getLogger(SimulationService.class);
-    private static final int GRID_SIZE = 8;
-    private static final int MAX_TIME = 10;
-    private static final String[] COLORS = {"red", "blue", "green", "yellow"};
 
+    /** Tamaño del lado del grid cuadrado donde viven las células. */
+    private static final int GRID_SIZE = 8;
+
+    /** Número de pasos de tiempo que dura la simulación. */
+    private static final int MAX_TIME = 10;
+
+    /** Colores asignados a las especies en orden: cada color puede comerse al siguiente. */
+    private static final String[] COLORS = {"red", "blue", "green", "yellow", "orange", "purple"};
+
+    /**
+     * Representa una célula en el grid de simulación.
+     * Guarda a qué especie pertenece, su color y si ha comido en el paso actual.
+     */
     private static class Cell {
+        /** Nombre de la especie a la que pertenece la célula. */
         String name;
+
+        /** Color de la célula, que determina su posición en la jerarquía alimentaria. */
         String color;
+
+        /** Indica si la célula ha comido en el paso de tiempo actual, lo que le permite reproducirse. */
         boolean hasEaten;
 
+        /**
+         * Crea una nueva célula con el nombre y color indicados.
+         *
+         * @param name  nombre de la especie
+         * @param color color asignado a la especie
+         */
         Cell(String name, String color) {
             this.name = name;
             this.color = color;
             this.hasEaten = false;
         }
 
+        /**
+         * Crea una copia independiente de esta célula con el mismo nombre, color y estado de alimentación.
+         *
+         * @return una nueva instancia {@link Cell} con los mismos valores
+         */
         Cell copy() {
             Cell c = new Cell(name, color);
             c.hasEaten = this.hasEaten;
@@ -39,28 +72,36 @@ public class SimulationService {
         }
     }
 
+    /** Repositorio para buscar y guardar las solicitudes de simulación en la base de datos. */
     private final SolicitudRepository solicitudRepository;
 
     /**
-     * Constructor de SimulationService.
+     * Crea el servicio inyectando el repositorio de solicitudes.
      *
-     * @param solicitudRepository El repositorio para acceder a los datos de las solicitudes.
+     * @param solicitudRepository el repositorio para acceder a los datos de las solicitudes
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public SimulationService(SolicitudRepository solicitudRepository) {
         this.solicitudRepository = solicitudRepository;
     }
 
     /**
-     * Ejecuta el proceso de simulación y guarda los resultados en la base de datos.
+     * Ejecuta la simulación de vida artificial y guarda los resultados en la base de datos.
+     * Si la solicitud no existe, no hace nada. Al terminar, marca la solicitud como "FINALIZADA".
      *
-     * @param solicitudId       El ID de la solicitud.
-     * @param entityNames      Lista de nombres de las entidades participantes.
-     * @param initialQuantities Lista de cantidades iniciales de cada entidad.
+     * @param solicitudId       el ID interno de la solicitud en la base de datos
+     * @param entityNames       lista de nombres de las entidades participantes (entre 1 y 6)
+     * @param initialQuantities lista de cantidades iniciales de cada entidad, en el mismo orden
+     * @throws IllegalArgumentException si el número de entidades no está entre 1 y 6
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     @Transactional
     public void executeSimulation(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
-        // Simulamos carga de trabajo
-        try { Thread.sleep(5000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        if (entityNames.size() < 1 || entityNames.size() > 6) {
+            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 6, se recibieron: " + entityNames.size());
+        }
 
         String resultadoSimulacion = generateSimulationData(entityNames, initialQuantities);
 
@@ -93,7 +134,10 @@ public class SimulationService {
         sb.append(GRID_SIZE).append("\n");
 
         Map<String, String> colorMap = new HashMap<>();
-        int numSpecies = Math.min(entityNames.size(), COLORS.length);
+        if (entityNames.size() < 1 || entityNames.size() > 6) {
+            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 6, se recibieron: " + entityNames.size());
+        }
+        int numSpecies = Math.min(entityNames.size(), 6);
         for (int i = 0; i < numSpecies; i++) {
             colorMap.put(entityNames.get(i), COLORS[i]);
         }
@@ -124,7 +168,7 @@ public class SimulationService {
                     appendCell(sb, 0, y, x, color);
                     totalPlaced++;
                 } else {
-                    // If random search fails, find the first available spot
+                    // Si la búsqueda aleatoria falla, encuentra el primer lugar disponible
                     boolean found = false;
                     for (int r = 0; r < GRID_SIZE && !found; r++) {
                         for (int c = 0; c < GRID_SIZE && !found; c++) {
@@ -155,7 +199,7 @@ public class SimulationService {
                         } else {
                             Cell occupant = nextGrid[nextY][nextX];
                             if (!occupant.name.equals(current.name)) {
-                                // Different species - Food chain hierarchy
+                                // Diferentes especies - Jerarquía de la cadena alimentaria
                                 if (canEat(current.color, occupant.color)) {
                                     log.info("Comer: {} ({}) se comió a {} ({}) en [{}, {}]", current.name, current.color, occupant.name, occupant.color, nextY, nextX);
                                     Cell winner = current.copy();
@@ -165,18 +209,21 @@ public class SimulationService {
                                     log.info("Comer: {} ({}) se comió a {} ({}) en [{}, {}]", occupant.name, occupant.color, current.name, current.color, nextY, nextX);
                                     occupant.hasEaten = true;
                                 } else {
-                                    // Neither eats, random tie-breaker
-                                    if (rand.nextBoolean()) nextGrid[nextY][nextX] = current.copy();
+                                    // Ninguno come, ambos sobreviven
+                                    placeInFreeSpot(nextGrid, current, nextX, nextY);
                                 }
                             } else {
-                                // Same species - Reproduction only if one has eaten
+                                // Misma especie - Reproducción solo si uno ha comido
                                 if (current.hasEaten) {
-                                    reproducir(nextGrid, current, nextX, nextY);
-                                    occupant.hasEaten = false;
+                                    if (reproducir(nextGrid, current, nextX, nextY)) {
+                                        current.hasEaten = false;
+                                    }
                                 } else if (occupant.hasEaten) {
-                                    reproducir(nextGrid, occupant, nextX, nextY);
-                                    occupant.hasEaten = false;
+                                    if (reproducir(nextGrid, occupant, nextX, nextY)) {
+                                        occupant.hasEaten = false;
+                                    }
                                 }
+                                placeInFreeSpot(nextGrid, current, nextX, nextY);
                             }
                         }
                     }
@@ -194,14 +241,61 @@ public class SimulationService {
         return sb.toString();
     }
 
-    private void reproducir(Cell[][] grid, Cell parent, int x, int y) {
-        Random rand = new Random();
-        int rx = Math.max(0, Math.min(GRID_SIZE - 1, x + rand.nextInt(3) - 1));
-        int ry = Math.max(0, Math.min(GRID_SIZE - 1, y + rand.nextInt(3) - 1));
-        if (grid[ry][rx] == null) {
-            grid[ry][rx] = new Cell(parent.name, parent.color);
-            log.info("Reproducción: Célula {} ({}) nació en [{}, {}]", parent.name, parent.color, ry, rx);
+    private void placeInFreeSpot(Cell[][] grid, Cell cell, int x, int y) {
+        if (grid[y][x] == null) {
+            grid[y][x] = cell.copy();
+            return;
         }
+        List<int[]> neighbors = new ArrayList<>();
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) continue;
+                int nx = x + i;
+                int ny = y + j;
+                if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
+                    neighbors.add(new int[]{nx, ny});
+                }
+            }
+        }
+        Collections.shuffle(neighbors);
+        for (int[] pos : neighbors) {
+            if (grid[pos[1]][pos[0]] == null) {
+                grid[pos[1]][pos[0]] = cell.copy();
+                return;
+            }
+        }
+        // Si no hay sitio cerca, buscamos en toda la rejilla como último recurso
+        for (int r = 0; r < GRID_SIZE; r++) {
+            for (int c = 0; c < GRID_SIZE; c++) {
+                if (grid[r][c] == null) {
+                    grid[r][c] = cell.copy();
+                    return;
+                }
+            }
+        }
+    }
+
+    private boolean reproducir(Cell[][] grid, Cell parent, int x, int y) {
+        List<int[]> neighbors = new ArrayList<>();
+        for (int i = -1; i <= 1; i++) {
+            for (int j = -1; j <= 1; j++) {
+                if (i == 0 && j == 0) continue;
+                int nx = x + i;
+                int ny = y + j;
+                if (nx >= 0 && nx < GRID_SIZE && ny >= 0 && ny < GRID_SIZE) {
+                    neighbors.add(new int[]{nx, ny});
+                }
+            }
+        }
+        Collections.shuffle(neighbors);
+        for (int[] pos : neighbors) {
+            if (grid[pos[1]][pos[0]] == null) {
+                grid[pos[1]][pos[0]] = new Cell(parent.name, parent.color);
+                log.info("Reproducción: Célula {} ({}) nació en [{}, {}]", parent.name, parent.color, pos[1], pos[0]);
+                return true;
+            }
+        }
+        return false;
     }
 
     private void appendCell(StringBuilder sb, int t, int y, int x, String color) {

@@ -32,23 +32,43 @@ import java.util.List;
 import java.util.Map;
 import jakarta.annotation.Generated;
 
+/**
+ * Interfaz que define el contrato de los endpoints para la gestión de solicitudes de simulación.
+ * Expone tres operaciones: crear una solicitud, comprobar su estado y listar las solicitudes de un usuario.
+ * Generada automáticamente por OpenAPI Generator a partir del contrato de la API.
+ * La implementación real de la lógica se hace en {@link SolicitudApiDelegate}.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Solicitud", description = "the Solicitud API")
 public interface SolicitudApi {
 
+    /**
+     * Devuelve el delegado que implementa la lógica de los endpoints.
+     * Por defecto devuelve una implementación vacía.
+     *
+     * @return el {@link SolicitudApiDelegate} activo
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     default SolicitudApiDelegate getDelegate() {
         return new SolicitudApiDelegate() {};
     }
 
+    /** Ruta del endpoint para comprobar el estado de una solicitud. */
     String PATH_SOLICITUD_COMPROBAR_SOLICITUD_GET = "/Solicitud/ComprobarSolicitud";
+
     /**
-     * GET /Solicitud/ComprobarSolicitud
+     * Comprueba si una solicitud de simulación ya ha sido procesada o sigue pendiente.
      *
-     * @param nombreUsuario  (optional)
-     * @param tok  (optional)
-     * @return Created (status code 201)
-     *         or Bad Request (status code 400)
+     * @param nombreUsuario el nombre del usuario propietario de la solicitud (opcional)
+     * @param tok           el token numérico que identifica la solicitud (opcional)
+     * @return código 201 con la lista de estados, o 400 si los datos son incorrectos
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     @Operation(
         operationId = "solicitudComprobarSolicitudGet",
@@ -79,13 +99,16 @@ public interface SolicitudApi {
     }
 
 
+    /** Ruta del endpoint para obtener todas las solicitudes de un usuario. */
     String PATH_SOLICITUD_GET_SOLICITUDES_USUARIO_GET = "/Solicitud/GetSolicitudesUsuario";
+
     /**
-     * GET /Solicitud/GetSolicitudesUsuario
+     * Devuelve la lista de tokens de todas las solicitudes que ha hecho un usuario.
      *
-     * @param nombreUsuario  (optional)
-     * @return Created (status code 201)
-     *         or Bad Request (status code 400)
+     * @param nombreUsuario el nombre del usuario del que se quieren consultar las solicitudes (opcional)
+     * @return código 201 con la lista de tokens, o 400 si los datos son incorrectos
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     @Operation(
         operationId = "solicitudGetSolicitudesUsuarioGet",
@@ -115,14 +138,17 @@ public interface SolicitudApi {
     }
 
 
+    /** Ruta del endpoint para crear una nueva solicitud de simulación. */
     String PATH_SOLICITUD_SOLICITAR_POST = "/Solicitud/Solicitar";
+
     /**
-     * POST /Solicitud/Solicitar
+     * Crea una nueva solicitud de simulación y la encola para su procesamiento asíncrono.
      *
-     * @param nombreUsuario  (optional)
-     * @param solicitud  (optional)
-     * @return Created (status code 201)
-     *         or Bad Request (status code 400)
+     * @param nombreUsuario el nombre del usuario que realiza la solicitud (opcional)
+     * @param solicitud     los datos de la simulación: nombres de entidades y cantidades iniciales (opcional)
+     * @return código 201 con el token asignado a la solicitud, o 400 si los datos son incorrectos
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     @Operation(
         operationId = "solicitudSolicitarPost",

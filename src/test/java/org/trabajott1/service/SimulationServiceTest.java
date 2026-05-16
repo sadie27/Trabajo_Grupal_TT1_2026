@@ -15,6 +15,14 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests unitarios para {@link SimulationService}.
+ * Verifica que la simulación actualiza correctamente la entidad cuando la solicitud existe
+ * y que no hace nada si la solicitud no se encuentra.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @ExtendWith(MockitoExtension.class)
 class SimulationServiceTest {
 
@@ -24,6 +32,13 @@ class SimulationServiceTest {
     @InjectMocks
     private SimulationService simulationService;
 
+    /**
+     * Verifica que cuando la solicitud existe, la simulación se ejecuta y la entidad queda con estado "FINALIZADA"
+     * y con un resultado no nulo asociado.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void executeSimulation_SolicitudFound_UpdatesEntity() {
         Integer solicitudId = 1;
@@ -48,6 +63,12 @@ class SimulationServiceTest {
         assertEquals(savedEntity, savedEntity.getResultado().getSolicitud());
     }
 
+    /**
+     * Verifica que cuando la solicitud no existe en la base de datos, no se guarda ningún resultado.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void executeSimulation_SolicitudNotFound_DoesNothing() {
         Integer solicitudId = 1;

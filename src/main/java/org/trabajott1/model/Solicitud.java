@@ -1,6 +1,7 @@
 package org.trabajott1.model;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.annotation.Generated;
 import jakarta.validation.Valid;
@@ -13,15 +14,23 @@ import java.util.List;
 import java.util.Objects;
 
 /**
- * Solicitud
+ * Representa los datos de entrada para una solicitud de simulación de vida artificial.
+ * Contiene la lista de nombres de entidades (especies) y sus cantidades iniciales.
+ * Se deserializa de forma personalizada para soportar tanto el formato directo
+ * como el formato envuelto en un objeto "solicitud".
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
-
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
+@JsonDeserialize(using = SolicitudDeserializer.class)
 public class Solicitud {
 
+    /** Lista de cantidades iniciales de cada entidad, en el mismo orden que {@code nombreEntidades}. */
     @Valid
     private JsonNullable<List<Integer>> cantidadesIniciales = JsonNullable.<List<Integer>>undefined();
 
+    /** Lista de nombres de las entidades (especies) que participarán en la simulación. */
     @Valid
     private JsonNullable<List<String>> nombreEntidades = JsonNullable.<List<String>>undefined();
 
@@ -36,11 +45,28 @@ public class Solicitud {
         return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
     }
 
+    /**
+     * Establece la lista de cantidades iniciales usando el patrón builder.
+     *
+     * @param cantidadesIniciales lista con la cantidad inicial de cada entidad
+     * @return esta misma instancia para encadenamiento de llamadas
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     public Solicitud cantidadesIniciales(List<Integer> cantidadesIniciales) {
         this.cantidadesIniciales = JsonNullable.of(cantidadesIniciales);
         return this;
     }
 
+    /**
+     * Añade un elemento a la lista de cantidades iniciales.
+     * Si la lista no existe aún, la crea.
+     *
+     * @param cantidadesInicialesItem la cantidad inicial a añadir
+     * @return esta misma instancia para encadenamiento de llamadas
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     public Solicitud addCantidadesInicialesItem(Integer cantidadesInicialesItem) {
         if (this.cantidadesIniciales == null || !this.cantidadesIniciales.isPresent()) {
             this.cantidadesIniciales = JsonNullable.of(new ArrayList<>());
@@ -50,9 +76,11 @@ public class Solicitud {
     }
 
     /**
-     * Get cantidadesIniciales
+     * Devuelve la lista de cantidades iniciales de cada entidad.
      *
-     * @return cantidadesIniciales
+     * @return lista de cantidades iniciales envuelta en {@link JsonNullable}
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
 
     @Schema(name = "cantidadesIniciales", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
@@ -65,11 +93,28 @@ public class Solicitud {
         this.cantidadesIniciales = cantidadesIniciales;
     }
 
+    /**
+     * Establece la lista de nombres de entidades usando el patrón builder.
+     *
+     * @param nombreEntidades lista con los nombres de las entidades participantes
+     * @return esta misma instancia para encadenamiento de llamadas
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     public Solicitud nombreEntidades(List<String> nombreEntidades) {
         this.nombreEntidades = JsonNullable.of(nombreEntidades);
         return this;
     }
 
+    /**
+     * Añade un elemento a la lista de nombres de entidades.
+     * Si la lista no existe aún, la crea.
+     *
+     * @param nombreEntidadesItem el nombre de la entidad a añadir
+     * @return esta misma instancia para encadenamiento de llamadas
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     public Solicitud addNombreEntidadesItem(String nombreEntidadesItem) {
         if (this.nombreEntidades == null || !this.nombreEntidades.isPresent()) {
             this.nombreEntidades = JsonNullable.of(new ArrayList<>());
@@ -79,9 +124,11 @@ public class Solicitud {
     }
 
     /**
-     * Get nombreEntidades
+     * Devuelve la lista de nombres de entidades de la solicitud.
      *
-     * @return nombreEntidades
+     * @return lista de nombres de entidades envuelta en {@link JsonNullable}
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
 
     @Schema(name = "nombreEntidades", requiredMode = Schema.RequiredMode.NOT_REQUIRED)

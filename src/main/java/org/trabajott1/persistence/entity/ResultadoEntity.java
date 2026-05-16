@@ -5,24 +5,33 @@ import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 /**
- * Entidad que representa el resultado de una simulación procesada.
+ * Entidad JPA que almacena el resultado de una simulación ya procesada.
+ * Cada resultado está vinculado de forma única a una solicitud y contiene
+ * los datos de la simulación en texto y la fecha en que fue procesada.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Entity
 @Table(name = "resultados")
 public class ResultadoEntity {
 
+    /** Identificador único del resultado en la base de datos. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_resultado")
     private Integer idResultado;
 
+    /** Solicitud de simulación a la que corresponde este resultado. */
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_solicitud", nullable = false, unique = true)
     private SolicitudEntity solicitud;
 
+    /** Datos de la simulación en formato de texto (series temporales del grid). */
     @Column(name = "datos_resultado", columnDefinition = "TEXT")
     private String datosResultado;
 
+    /** Fecha y hora en que la simulación fue procesada y el resultado guardado. */
     @Column(name = "fecha_procesamiento")
     private LocalDateTime fechaProcesamiento;
 
@@ -32,6 +41,12 @@ public class ResultadoEntity {
     public ResultadoEntity() {
     }
 
+    /**
+     * Establece automáticamente la fecha de procesamiento justo antes de guardar el resultado por primera vez.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @PrePersist
     protected void onCreate() {
         fechaProcesamiento = LocalDateTime.now();

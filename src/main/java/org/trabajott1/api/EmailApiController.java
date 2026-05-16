@@ -7,18 +7,42 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Optional;
 
+/**
+ * Controlador Spring MVC para el endpoint de correo electrónico.
+ * Recibe las peticiones HTTP y las delega en {@link EmailApiDelegate}.
+ * Generado automáticamente por OpenAPI Generator.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 @Controller
 @RequestMapping("${openapi.servicioConsumible.base-path:}")
 public class EmailApiController implements EmailApi {
 
+    /** Delegado que contiene la lógica real del endpoint de email. */
     private final EmailApiDelegate delegate;
 
+    /**
+     * Crea el controlador inyectando el delegado correspondiente.
+     * Si no hay ningún delegado disponible en el contexto, usa la implementación por defecto.
+     *
+     * @param delegate el delegado que implementa la lógica del endpoint, puede ser {@code null}
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     public EmailApiController(@Autowired(required = false) EmailApiDelegate delegate) {
         this.delegate = Optional.ofNullable(delegate).orElse(new EmailApiDelegate() {
         });
     }
 
+    /**
+     * Devuelve el delegado configurado para este controlador.
+     *
+     * @return el {@link EmailApiDelegate} activo
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Override
     public EmailApiDelegate getDelegate() {
         return delegate;

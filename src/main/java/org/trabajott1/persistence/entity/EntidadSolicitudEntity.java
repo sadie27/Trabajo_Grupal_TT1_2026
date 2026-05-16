@@ -3,24 +3,32 @@ package org.trabajott1.persistence.entity;
 import jakarta.persistence.*;
 
 /**
- * Entidad que representa una de las especies o tipos de células participantes en una solicitud de simulación.
+ * Entidad JPA que representa una de las especies o tipos de células participantes en una solicitud de simulación.
+ * Cada fila de la tabla {@code entidades_solicitud} corresponde a una entidad con su nombre y cantidad inicial.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Entity
 @Table(name = "entidades_solicitud")
 public class EntidadSolicitudEntity {
 
+    /** Identificador único de la entidad en la base de datos. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Integer id;
 
+    /** Solicitud de simulación a la que pertenece esta entidad. */
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "id_solicitud", nullable = false)
     private SolicitudEntity solicitud;
 
+    /** Nombre de la especie o tipo de célula (p.ej. "Conejo", "Zorro"). */
     @Column(name = "nombre_entidad", nullable = false)
     private String nombreEntidad;
 
+    /** Número de individuos de esta entidad al inicio de la simulación. */
     @Column(name = "cantidad_inicial", nullable = false)
     private Integer cantidadInicial;
 

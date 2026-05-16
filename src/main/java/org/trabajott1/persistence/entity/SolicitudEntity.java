@@ -7,35 +7,48 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Entidad que representa una solicitud de simulación en la base de datos.
+ * Entidad JPA que representa una solicitud de simulación en la base de datos.
+ * Agrupa toda la información asociada a una petición: el usuario, el token único, el estado,
+ * las entidades participantes y el resultado una vez procesada.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Entity
 @Table(name = "solicitudes")
 public class SolicitudEntity {
 
+    /** Identificador único de la solicitud en la base de datos. */
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_solicitud")
     private Integer idSolicitud;
 
+    /** Nombre del usuario que realizó la solicitud de simulación. */
     @Column(name = "nombre_usuario", nullable = false)
     private String nombreUsuario;
 
+    /** Token numérico único de 5 dígitos que identifica la solicitud de cara al cliente. */
     @Column(name = "token_solicitud", unique = true, nullable = false)
     private Integer tokenSolicitud;
 
+    /** Estado actual de la solicitud: "PENDIENTE", "PROCESANDO" o "FINALIZADA". */
     @Column(name = "estado", nullable = false, length = 50)
     private String estado = "PENDIENTE";
 
+    /** Fecha y hora en que se creó la solicitud (no se modifica una vez guardada). */
     @Column(name = "fecha_creacion", nullable = false, updatable = false)
     private LocalDateTime fechaCreacion;
 
+    /** Fecha y hora de la última actualización del estado de la solicitud. */
     @Column(name = "fecha_actualizacion")
     private LocalDateTime fechaActualizacion;
 
+    /** Lista de entidades (especies) que participan en esta simulación. */
     @OneToMany(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private List<EntidadSolicitudEntity> entidades = new ArrayList<>();
 
+    /** Resultado asociado a esta solicitud, disponible una vez la simulación ha finalizado. */
     @OneToOne(mappedBy = "solicitud", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     private ResultadoEntity resultado;
 
@@ -45,12 +58,24 @@ public class SolicitudEntity {
     public SolicitudEntity() {
     }
 
+    /**
+     * Inicializa las fechas de creación y última actualización justo antes de guardar la solicitud por primera vez.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @PrePersist
     protected void onCreate() {
         fechaCreacion = LocalDateTime.now();
         fechaActualizacion = LocalDateTime.now();
     }
 
+    /**
+     * Actualiza la fecha de última modificación cada vez que se guarda un cambio en la solicitud.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @PreUpdate
     protected void onUpdate() {
         fechaActualizacion = LocalDateTime.now();

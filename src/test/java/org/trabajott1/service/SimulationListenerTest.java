@@ -11,6 +11,14 @@ import java.util.List;
 
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests unitarios para {@link SimulationListener}.
+ * Verifica que el listener delega correctamente en el servicio de simulación
+ * y que no lanza excepciones cuando el servicio falla.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @ExtendWith(MockitoExtension.class)
 class SimulationListenerTest {
 
@@ -20,6 +28,12 @@ class SimulationListenerTest {
     @InjectMocks
     private SimulationListener simulationListener;
 
+    /**
+     * Verifica que al recibir un mensaje, el listener llama a executeSimulation con los datos correctos.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void receiveMessage_CallsService() {
         Integer solicitudId = 1;
@@ -32,6 +46,12 @@ class SimulationListenerTest {
         verify(simulationService).executeSimulation(solicitudId, names, quantities);
     }
 
+    /**
+     * Verifica que cuando el servicio lanza una excepción, el listener la captura sin propagarla.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void receiveMessage_HandlesException() {
         Integer solicitudId = 1;
@@ -40,7 +60,7 @@ class SimulationListenerTest {
         doThrow(new RuntimeException("Simulated error"))
                 .when(simulationService).executeSimulation(anyInt(), anyList(), anyList());
 
-        // Should not throw exception
+        // No debería lanzar excepción
         simulationListener.receiveMessage(message);
 
         verify(simulationService).executeSimulation(anyInt(), anyList(), anyList());

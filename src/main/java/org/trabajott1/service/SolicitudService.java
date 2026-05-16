@@ -16,19 +16,29 @@ import java.util.Random;
 import java.util.stream.Collectors;
 
 /**
- * Servicio para gestionar las solicitudes de simulación.
+ * Servicio encargado de gestionar el ciclo de vida de las solicitudes de simulación.
+ * Permite crear nuevas solicitudes, comprobar su estado y listar las solicitudes de un usuario.
+ * Al crear una solicitud, la encola en RabbitMQ para su procesamiento asíncrono.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Service
 public class SolicitudService {
 
+    /** Repositorio para persistir y consultar solicitudes en la base de datos. */
     private final SolicitudRepository solicitudRepository;
+
+    /** Template de RabbitMQ usado para publicar mensajes de simulación en la cola. */
     private final RabbitTemplate rabbitTemplate;
 
     /**
-     * Constructor de SolicitudService.
+     * Crea el servicio inyectando el repositorio de solicitudes y el template de RabbitMQ.
      *
-     * @param solicitudRepository El repositorio de solicitudes.
-     * @param rabbitTemplate      El template de RabbitMQ para el envío de mensajes.
+     * @param solicitudRepository el repositorio para acceder a los datos de las solicitudes
+     * @param rabbitTemplate      el template para publicar mensajes en RabbitMQ
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public SolicitudService(SolicitudRepository solicitudRepository, RabbitTemplate rabbitTemplate) {
         this.solicitudRepository = solicitudRepository;
@@ -36,12 +46,16 @@ public class SolicitudService {
     }
 
     /**
-     * Comprueba el estado de una solicitud específica.
+     * Comprueba el estado de una solicitud de simulación específica.
+     * Devuelve una lista de dos enteros: [1,0] si está finalizada, [0,1] si sigue procesándose,
+     * o [0,0] si no se encontró la solicitud o no pertenece al usuario.
      *
-     * @param nombreUsuario El nombre del usuario.
-     * @param tok           El token de la solicitud.
-     * @return Una lista de enteros que representa el estado (finalizada, en proceso, no encontrada).
-     * @throws IllegalArgumentException Si los parámetros obligatorios son nulos o vacíos.
+     * @param nombreUsuario el nombre del usuario propietario de la solicitud
+     * @param tok           el token numérico de la solicitud a comprobar
+     * @return lista con dos enteros que codifican el estado de la solicitud
+     * @throws IllegalArgumentException si el nombre de usuario o el token son nulos o vacíos
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public List<Integer> comprobarSolicitud(String nombreUsuario, Integer tok) {
         if (nombreUsuario == null || nombreUsuario.isEmpty()) {
@@ -64,11 +78,13 @@ public class SolicitudService {
     }
 
     /**
-     * Obtiene los tokens de todas las solicitudes de un usuario.
+     * Devuelve la lista de tokens de todas las solicitudes de simulación que ha hecho un usuario.
      *
-     * @param nombreUsuario El nombre del usuario.
-     * @return Una lista con los tokens de las solicitudes.
-     * @throws IllegalArgumentException Si el nombre de usuario es obligatorio pero no se proporciona.
+     * @param nombreUsuario el nombre del usuario del que se quieren listar las solicitudes
+     * @return lista con los tokens numéricos de las solicitudes del usuario, vacía si no tiene ninguna
+     * @throws IllegalArgumentException si el nombre de usuario es nulo o vacío
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public List<Integer> getSolicitudesUsuario(String nombreUsuario) {
         if (nombreUsuario == null || nombreUsuario.isEmpty()) {
@@ -81,12 +97,15 @@ public class SolicitudService {
     }
 
     /**
-     * Crea una nueva solicitud de simulación y la encola para su procesamiento.
+     * Crea una nueva solicitud de simulación, le asigna un token único de 5 dígitos,
+     * la guarda en la base de datos y la encola en RabbitMQ para su procesamiento asíncrono.
      *
-     * @param nombreUsuario El nombre del usuario que realiza la solicitud.
-     * @param solicitud     Los datos de la solicitud.
-     * @return Un objeto SolicitudResponse con el token generado.
-     * @throws IllegalArgumentException Si los parámetros obligatorios son nulos o vacíos.
+     * @param nombreUsuario el nombre del usuario que realiza la solicitud
+     * @param solicitud     los datos de la solicitud: nombres de entidades y cantidades iniciales
+     * @return un {@link org.trabajott1.model.SolicitudResponse} con el token asignado y {@code done = true}
+     * @throws IllegalArgumentException si el nombre de usuario o la solicitud son nulos o vacíos
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     @Transactional
     public SolicitudResponse crearSolicitud(String nombreUsuario, Solicitud solicitud) {
@@ -100,7 +119,14 @@ public class SolicitudService {
         SolicitudEntity entity = new SolicitudEntity();
         entity.setNombreUsuario(nombreUsuario);
         
-        int tokenGenerado = 10000 + new Random().nextInt(90000);
+        int tokenGenerado;
+        Random random = new Random();
+        boolean unico;
+        do {
+            tokenGenerado = 10000 + random.nextInt(90000);
+            unico = solicitudRepository.findByTokenSolicitud(tokenGenerado).isEmpty();
+        } while (!unico);
+        
         entity.setTokenSolicitud(tokenGenerado);
         entity.setEstado("PROCESANDO");
 

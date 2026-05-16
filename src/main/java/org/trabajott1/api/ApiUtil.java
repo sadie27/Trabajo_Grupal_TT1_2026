@@ -6,16 +6,25 @@ import org.springframework.web.context.request.NativeWebRequest;
 import java.io.IOException;
 
 /**
- * Utilidades para el manejo de respuestas en la API.
+ * Clase de utilidades para el manejo de respuestas de ejemplo en la API.
+ * Se usa principalmente en las implementaciones por defecto de los delegados
+ * generados por OpenAPI para devolver respuestas de prueba según el tipo de contenido aceptado.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 public class ApiUtil {
+
     /**
-     * Establece una respuesta de ejemplo en el objeto {@link HttpServletResponse}.
+     * Escribe una respuesta de ejemplo directamente en el {@link HttpServletResponse} de la petición actual.
+     * Configura la codificación a UTF-8, añade la cabecera {@code Content-Type} y escribe el contenido de ejemplo.
      *
-     * @param req La solicitud web nativa.
-     * @param contentType El tipo de contenido de la respuesta (por ejemplo, "application/json").
-     * @param example El contenido de ejemplo que se escribirá en la respuesta.
-     * @throws RuntimeException Si ocurre un error de E/S al escribir en la respuesta.
+     * @param req         la solicitud web nativa de la que se obtiene la respuesta HTTP subyacente
+     * @param contentType el tipo de contenido de la respuesta (por ejemplo, {@code "application/json"})
+     * @param example     el texto de ejemplo que se escribirá en el cuerpo de la respuesta
+     * @throws RuntimeException si ocurre un error de E/S al escribir en la respuesta
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public static void setExampleResponse(NativeWebRequest req, String contentType, String example) {
         try {

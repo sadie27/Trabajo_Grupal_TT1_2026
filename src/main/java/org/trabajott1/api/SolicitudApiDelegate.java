@@ -12,24 +12,40 @@ import java.util.List;
 import java.util.Optional;
 
 /**
- * A delegate to be called by the {@link SolicitudApiController}}.
- * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
+ * Delegado para {@link SolicitudApiController}: contiene la lógica de negocio de los endpoints de solicitud.
+ * Implementa esta interfaz con una clase anotada con {@link org.springframework.stereotype.Service}
+ * para proporcionar la implementación real.
+ * Generada automáticamente por OpenAPI Generator.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 public interface SolicitudApiDelegate {
 
+    /**
+     * Devuelve la petición web nativa actual, si está disponible.
+     * Sirve para acceder a las cabeceras HTTP (por ejemplo, el header {@code Accept}).
+     *
+     * @return un {@link Optional} con la petición actual, vacío si no hay contexto de petición
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
 
     /**
-     * GET /Solicitud/ComprobarSolicitud
+     * Implementación por defecto del endpoint {@code GET /Solicitud/ComprobarSolicitud}.
+     * Devuelve respuestas de ejemplo según el tipo de contenido aceptado.
+     * Las subclases deben sobreescribir este método para la lógica real.
      *
-     * @param nombreUsuario (optional)
-     * @param tok           (optional)
-     * @return Created (status code 201)
-     * or Bad Request (status code 400)
+     * @param nombreUsuario el nombre del usuario propietario de la solicitud (opcional)
+     * @param tok           el token numérico que identifica la solicitud (opcional)
+     * @return lista de enteros indicando el estado: [1,0] finalizada, [0,1] en proceso, [0,0] no encontrada
      * @see SolicitudApi#solicitudComprobarSolicitudGet
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     default ResponseEntity<List<Integer>> solicitudComprobarSolicitudGet(String nombreUsuario,
                                                                          Integer tok) {
@@ -62,12 +78,15 @@ public interface SolicitudApiDelegate {
     }
 
     /**
-     * GET /Solicitud/GetSolicitudesUsuario
+     * Implementación por defecto del endpoint {@code GET /Solicitud/GetSolicitudesUsuario}.
+     * Devuelve respuestas de ejemplo según el tipo de contenido aceptado.
+     * Las subclases deben sobreescribir este método para la lógica real.
      *
-     * @param nombreUsuario (optional)
-     * @return Created (status code 201)
-     * or Bad Request (status code 400)
+     * @param nombreUsuario el nombre del usuario del que se quieren listar las solicitudes (opcional)
+     * @return lista de tokens de todas las solicitudes del usuario
      * @see SolicitudApi#solicitudGetSolicitudesUsuarioGet
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     default ResponseEntity<List<Integer>> solicitudGetSolicitudesUsuarioGet(String nombreUsuario) {
         getRequest().ifPresent(request -> {
@@ -99,13 +118,16 @@ public interface SolicitudApiDelegate {
     }
 
     /**
-     * POST /Solicitud/Solicitar
+     * Implementación por defecto del endpoint {@code POST /Solicitud/Solicitar}.
+     * Devuelve respuestas de ejemplo según el tipo de contenido aceptado.
+     * Las subclases deben sobreescribir este método para la lógica real.
      *
-     * @param nombreUsuario (optional)
-     * @param solicitud     (optional)
-     * @return Created (status code 201)
-     * or Bad Request (status code 400)
+     * @param nombreUsuario el nombre del usuario que realiza la solicitud (opcional)
+     * @param solicitud     los datos de la simulación: nombres de entidades y cantidades iniciales (opcional)
+     * @return respuesta con el token asignado a la nueva solicitud, o error si los datos son incorrectos
      * @see SolicitudApi#solicitudSolicitarPost
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     default ResponseEntity<SolicitudResponse> solicitudSolicitarPost(String nombreUsuario,
                                                                      Solicitud solicitud) {

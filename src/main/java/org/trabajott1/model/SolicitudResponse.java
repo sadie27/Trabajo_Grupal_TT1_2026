@@ -10,18 +10,25 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * SolicitudResponse
+ * Respuesta del endpoint de creación de solicitudes de simulación.
+ * Contiene el resultado de la operación y el token único asignado a la solicitud creada.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
-
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 public class SolicitudResponse {
 
+    /** Indica si la solicitud se creó correctamente. */
     private @Nullable Boolean done;
 
+    /** Token único asignado a la solicitud de simulación recién creada. */
     private @Nullable Integer tokenSolicitud;
 
+    /** Mensaje de error si la creación no fue exitosa; no presente si fue correcta. */
     private JsonNullable<String> errorMessage = JsonNullable.<String>undefined();
 
+    /** Dato adicional de confirmación de la operación. */
     private @Nullable Boolean data;
 
     private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {

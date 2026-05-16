@@ -31,23 +31,42 @@ import java.util.List;
 import java.util.Map;
 import jakarta.annotation.Generated;
 
+/**
+ * Interfaz que define el contrato del endpoint de envío de correo electrónico.
+ * Generada automáticamente por OpenAPI Generator a partir del contrato de la API.
+ * La implementación real de la lógica se hace en {@link EmailApiDelegate}.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Email", description = "the Email API")
 public interface EmailApi {
 
+    /**
+     * Devuelve el delegado que implementa la lógica del endpoint.
+     * Por defecto devuelve una implementación vacía.
+     *
+     * @return el {@link EmailApiDelegate} activo
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     default EmailApiDelegate getDelegate() {
         return new EmailApiDelegate() {};
     }
 
+    /** Ruta del endpoint para envío de correo electrónico. */
     String PATH_EMAIL_POST = "/Email";
+
     /**
-     * POST /Email
+     * Envía un correo electrónico al destinatario indicado con el mensaje proporcionado.
      *
-     * @param emailAddress  (optional)
-     * @param message  (optional)
-     * @return Created (status code 201)
-     *         or Bad Request (status code 400)
+     * @param emailAddress la dirección de correo del destinatario (opcional)
+     * @param message      el contenido del mensaje a enviar (opcional)
+     * @return código 201 si el correo se envió correctamente, o 400 si los datos son incorrectos
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     @Operation(
         operationId = "emailPost",

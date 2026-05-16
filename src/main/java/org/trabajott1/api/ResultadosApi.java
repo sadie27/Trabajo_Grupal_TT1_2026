@@ -31,23 +31,42 @@ import java.util.List;
 import java.util.Map;
 import jakarta.annotation.Generated;
 
+/**
+ * Interfaz que define el contrato del endpoint para consultar los resultados de una simulación.
+ * Generada automáticamente por OpenAPI Generator a partir del contrato de la API.
+ * La implementación real de la lógica se hace en {@link ResultadosApiDelegate}.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 @Validated
 @Tag(name = "Resultados", description = "the Resultados API")
 public interface ResultadosApi {
 
+    /**
+     * Devuelve el delegado que implementa la lógica del endpoint.
+     * Por defecto devuelve una implementación vacía.
+     *
+     * @return el {@link ResultadosApiDelegate} activo
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     default ResultadosApiDelegate getDelegate() {
         return new ResultadosApiDelegate() {};
     }
 
+    /** Ruta del endpoint para consultar los resultados de simulación. */
     String PATH_RESULTADOS_POST = "/Resultados";
+
     /**
-     * POST /Resultados
+     * Consulta y devuelve los resultados de una simulación ya procesada.
      *
-     * @param nombreUsuario  (optional)
-     * @param tok  (optional)
-     * @return Created (status code 201)
-     *         or Bad Request (status code 400)
+     * @param nombreUsuario el nombre del usuario que realizó la solicitud (opcional)
+     * @param tok           el token numérico que identifica la solicitud (opcional)
+     * @return código 201 con los resultados si se encontraron, o 400 si los datos son incorrectos
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     @Operation(
         operationId = "resultadosPost",

@@ -14,6 +14,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.when;
 
+/**
+ * Tests unitarios para {@link ResultadosApiDelegateImpl}.
+ * Verifica que el delegate devuelve los códigos HTTP correctos según el resultado del servicio.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @ExtendWith(MockitoExtension.class)
 class ResultadosApiDelegateImplTest {
 
@@ -22,11 +29,23 @@ class ResultadosApiDelegateImplTest {
 
     private ResultadosApiDelegateImpl resultadosApiDelegate;
 
+    /**
+     * Inicializa el delegate con el mock del servicio antes de cada test.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @BeforeEach
     void setUp() {
         resultadosApiDelegate = new ResultadosApiDelegateImpl(resultadosService);
     }
 
+    /**
+     * Verifica que cuando el servicio tiene éxito, el delegate devuelve HTTP 201 con los resultados.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void resultadosPost_Success() {
         String username = "user1";
@@ -41,6 +60,12 @@ class ResultadosApiDelegateImplTest {
         assertEquals(mockResponse, response.getBody());
     }
 
+    /**
+     * Verifica que cuando el servicio lanza una excepción, el delegate devuelve HTTP 400.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void resultadosPost_BadRequest() {
         when(resultadosService.obtenerResultados(any(), any())).thenThrow(new IllegalArgumentException("Missing params"));
