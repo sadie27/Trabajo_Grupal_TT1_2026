@@ -21,6 +21,14 @@ import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 
+/**
+ * Test de integración que verifica el flujo completo de creación de una solicitud:
+ * persistencia en base de datos, asignación de token y envío del mensaje a RabbitMQ.
+ * Usa una base de datos H2 en memoria y un mock de RabbitTemplate para evitar dependencias externas.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @SpringBootTest
 class PersistenceIntegrationTest {
 
@@ -33,6 +41,13 @@ class PersistenceIntegrationTest {
     @Autowired
     private SolicitudRepository solicitudRepository;
 
+    /**
+     * Verifica que al crear una solicitud se persiste correctamente en la base de datos,
+     * su estado inicial es "PROCESANDO" y se envía un mensaje a RabbitMQ.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void testCrearSolicitudYEnvioMensaje() {
         // 1. Crear solicitud

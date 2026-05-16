@@ -4,18 +4,24 @@ import org.springframework.stereotype.Service;
 import org.trabajott1.model.EmailResponse;
 
 /**
- * Servicio para el envío de correos electrónicos.
+ * Servicio encargado de gestionar el envío de correos electrónicos.
+ * Valida los parámetros de entrada y devuelve una respuesta con el resultado de la operación.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Service
 public class EmailService {
 
     /**
-     * Envía un correo electrónico con el mensaje especificado.
+     * Envía un correo electrónico al destinatario indicado con el mensaje proporcionado.
      *
-     * @param email   La dirección de correo electrónico del destinatario.
-     * @param message El mensaje a enviar.
-     * @return Un objeto EmailResponse indicando el resultado de la operación.
-     * @throws IllegalArgumentException Si el email es nulo o está vacío.
+     * @param email   la dirección de correo electrónico del destinatario
+     * @param message el texto del mensaje a enviar
+     * @return un {@link EmailResponse} con {@code done = true} si el envío fue exitoso
+     * @throws IllegalArgumentException si el email es nulo o está vacío
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public EmailResponse send(String email, String message) {
         // validaciones

@@ -12,6 +12,14 @@ import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
+/**
+ * Tests de regresión para verificar el comportamiento del motor de simulación de {@link SimulationService}.
+ * Comprueba que las células no desaparecen incorrectamente al colisionar con otras de la misma especie
+ * y que cuando dos especies no pueden comerse entre ellas, ambas sobreviven.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @ExtendWith(MockitoExtension.class)
 class SimulationServiceReproductionTest {
 
@@ -21,6 +29,13 @@ class SimulationServiceReproductionTest {
     @InjectMocks
     private SimulationService simulationService;
 
+    /**
+     * Verifica que cuando una especie colisiona consigo misma, el número de células no disminuye
+     * en cada paso de tiempo (las colisiones de misma especie no deben causar muertes).
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void testSameSpeciesCollision_CellDisappears() {
         List<String> names = List.of("SpeciesA");
@@ -55,6 +70,14 @@ class SimulationServiceReproductionTest {
         }
     }
 
+    /**
+     * Verifica que cuando dos especies no tienen relación de depredación entre ellas
+     * (p.ej. "roja" y "verde" separadas por otra en la jerarquía), el número de células
+     * no disminuye en ningún paso de tiempo.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void testDifferentSpeciesNoEating_BothSurvive() {
         // Red and Green don't eat each other (Red eats Blue, Blue eats Green)

@@ -19,6 +19,14 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+/**
+ * Tests unitarios para {@link SolicitudService}.
+ * Verifica el comportamiento de los métodos de comprobación, listado y creación de solicitudes,
+ * incluyendo validación de parámetros y el envío de mensajes a RabbitMQ.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @ExtendWith(MockitoExtension.class)
 class SolicitudServiceTest {
 
@@ -31,12 +39,24 @@ class SolicitudServiceTest {
     @InjectMocks
     private SolicitudService solicitudService;
 
+    /**
+     * Verifica que pasar parámetros nulos a comprobarSolicitud lanza {@link IllegalArgumentException}.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void comprobarSolicitud_InvalidInputs() {
         assertThrows(IllegalArgumentException.class, () -> solicitudService.comprobarSolicitud(null, 123));
         assertThrows(IllegalArgumentException.class, () -> solicitudService.comprobarSolicitud("user", null));
     }
 
+    /**
+     * Verifica que cuando el token no corresponde a ninguna solicitud se devuelve [0,0].
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void comprobarSolicitud_NotFound() {
         when(solicitudRepository.findByTokenSolicitud(123)).thenReturn(Optional.empty());
@@ -44,6 +64,12 @@ class SolicitudServiceTest {
         assertEquals(List.of(0, 0), result);
     }
 
+    /**
+     * Verifica que cuando la solicitud está en estado "FINALIZADA" se devuelve [1,0].
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void comprobarSolicitud_Finalizada() {
         SolicitudEntity entity = new SolicitudEntity();
@@ -55,6 +81,12 @@ class SolicitudServiceTest {
         assertEquals(List.of(1, 0), result);
     }
 
+    /**
+     * Verifica que cuando la solicitud está en estado "PROCESANDO" se devuelve [0,1].
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void comprobarSolicitud_Procesando() {
         SolicitudEntity entity = new SolicitudEntity();
@@ -66,6 +98,12 @@ class SolicitudServiceTest {
         assertEquals(List.of(0, 1), result);
     }
 
+    /**
+     * Verifica que se devuelven correctamente los tokens de todas las solicitudes de un usuario.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void getSolicitudesUsuario_Success() {
         SolicitudEntity s1 = new SolicitudEntity();
@@ -79,6 +117,12 @@ class SolicitudServiceTest {
         assertEquals(List.of(10001, 10002), result);
     }
 
+    /**
+     * Verifica que al crear una solicitud válida se persiste, se asigna un token y se publica en RabbitMQ.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void crearSolicitud_Success() {
         String username = "user";

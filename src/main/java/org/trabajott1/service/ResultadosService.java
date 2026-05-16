@@ -8,29 +8,40 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 /**
- * Servicio para gestionar la obtención de resultados de las simulaciones.
+ * Servicio encargado de consultar y devolver los resultados de las simulaciones procesadas.
+ * Verifica que el usuario sea el propietario de la solicitud antes de devolver los datos.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Service
 public class ResultadosService {
 
+    /** Repositorio para buscar los resultados de simulación en la base de datos. */
     private final ResultadoRepository resultadoRepository;
 
     /**
-     * Constructor de ResultadosService.
+     * Crea el servicio inyectando el repositorio de resultados.
      *
-     * @param resultadoRepository El repositorio para acceder a los datos de los resultados.
+     * @param resultadoRepository el repositorio para acceder a los datos de los resultados
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public ResultadosService(ResultadoRepository resultadoRepository) {
         this.resultadoRepository = resultadoRepository;
     }
 
     /**
-     * Obtiene los resultados de una simulación para un usuario y token específicos.
+     * Consulta y devuelve los resultados de una simulación dado el usuario y el token de la solicitud.
+     * Si la solicitud no pertenece al usuario o no existe, devuelve una respuesta con {@code done = false}.
      *
-     * @param nombreUsuario El nombre del usuario.
-     * @param tok           El token de la solicitud.
-     * @return Un objeto ResultsResponse con los resultados o un mensaje de error.
-     * @throws IllegalArgumentException Si el nombre de usuario o el token son obligatorios pero no se proporcionan.
+     * @param nombreUsuario el nombre del usuario que consulta los resultados
+     * @param tok           el token numérico de la solicitud de simulación
+     * @return un {@link ResultsResponse} con los datos si la solicitud existe y pertenece al usuario,
+     *         o con un mensaje de error en caso contrario
+     * @throws IllegalArgumentException si el nombre de usuario o el token son nulos o vacíos
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public ResultsResponse obtenerResultados(String nombreUsuario, Integer tok) {
         if (nombreUsuario == null || nombreUsuario.isEmpty()) {

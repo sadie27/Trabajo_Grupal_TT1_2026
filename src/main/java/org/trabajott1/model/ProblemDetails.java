@@ -14,26 +14,31 @@ import java.util.Map;
 import java.util.Objects;
 
 /**
- * ProblemDetails
+ * Modelo de error estándar para la API, basado en el estándar RFC 7807 (Problem Details for HTTP APIs).
+ * Se usa para devolver información estructurada cuando ocurre un error en algún endpoint.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
-
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 public class ProblemDetails {
 
+    /** URI que identifica el tipo de problema (p.ej. una URL de documentación del error). */
     private JsonNullable<String> type = JsonNullable.<String>undefined();
 
+    /** Resumen breve del tipo de problema, legible por humanos. */
     private JsonNullable<String> title = JsonNullable.<String>undefined();
 
+    /** Código de estado HTTP asociado al problema. */
     private JsonNullable<Integer> status = JsonNullable.<Integer>undefined();
 
+    /** Explicación detallada del problema concreto que ha ocurrido. */
     private JsonNullable<String> detail = JsonNullable.<String>undefined();
 
+    /** URI que identifica la instancia específica donde ocurrió el problema. */
     private JsonNullable<String> instance = JsonNullable.<String>undefined();
-    /**
-     * A container for additional, undeclared properties.
-     * This is a holder for any undeclared properties as specified with
-     * the 'additionalProperties' keyword in the OAS document.
-     */
+
+    /** Propiedades adicionales no declaradas explícitamente en el esquema de la API. */
     private Map<String, Object> additionalProperties;
 
     private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {

@@ -6,14 +6,21 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
 /**
- * Configuración de SpringDoc para la generación de documentación OpenAPI (Swagger).
+ * Configuración de SpringDoc para la generación automática de la documentación OpenAPI (Swagger UI).
+ * Define el título, descripción y versión de la API que aparecen en la interfaz de Swagger.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Configuration
 public class SpringDocConfiguration {
 
     /**
-     * Define la información básica de la API para la documentación.
-     * @return Instancia de OpenAPI con la info configurada.
+     * Crea y configura el objeto {@link OpenAPI} con los metadatos básicos de la API.
+     *
+     * @return instancia de {@link OpenAPI} con título, descripción y versión configurados
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     @Bean(name = "org.openapitools.configuration.SpringDocConfiguration.apiInfo")
     OpenAPI apiInfo() {

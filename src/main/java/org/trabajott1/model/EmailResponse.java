@@ -10,14 +10,19 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * EmailResponse
+ * Respuesta del endpoint de envío de correo electrónico.
+ * Indica si el correo se envió correctamente y, en caso de fallo, contiene el mensaje de error.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
-
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 public class EmailResponse {
 
+    /** Indica si la operación de envío se completó correctamente. */
     private @Nullable Boolean done;
 
+    /** Mensaje de error en caso de que el envío haya fallado; no presente si fue exitoso. */
     private JsonNullable<String> errorMessage = JsonNullable.<String>undefined();
 
     private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {
@@ -31,15 +36,25 @@ public class EmailResponse {
         return a.isPresent() ? Arrays.deepHashCode(new Object[]{a.get()}) : 31;
     }
 
+    /**
+     * Establece el estado de la operación usando el patrón builder.
+     *
+     * @param done {@code true} si el envío fue exitoso, {@code false} o {@code null} en caso contrario
+     * @return esta misma instancia para encadenamiento de llamadas
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     public EmailResponse done(@Nullable Boolean done) {
         this.done = done;
         return this;
     }
 
     /**
-     * Get done
+     * Indica si el correo electrónico se envió correctamente.
      *
-     * @return done
+     * @return {@code true} si el envío fue exitoso, {@code false} o {@code null} en caso contrario
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
 
     @Schema(name = "done", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
@@ -53,15 +68,25 @@ public class EmailResponse {
         this.done = done;
     }
 
+    /**
+     * Establece el mensaje de error usando el patrón builder.
+     *
+     * @param errorMessage el mensaje de error a incluir en la respuesta
+     * @return esta misma instancia para encadenamiento de llamadas
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     public EmailResponse errorMessage(String errorMessage) {
         this.errorMessage = JsonNullable.of(errorMessage);
         return this;
     }
 
     /**
-     * Get errorMessage
+     * Devuelve el mensaje de error de la operación, si hubo alguno.
      *
-     * @return errorMessage
+     * @return el mensaje de error envuelto en {@link JsonNullable}, o no presente si no hubo error
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
 
     @Schema(name = "errorMessage", requiredMode = Schema.RequiredMode.NOT_REQUIRED)

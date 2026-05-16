@@ -10,24 +10,40 @@ import org.trabajott1.model.ResultsResponse;
 import java.util.Optional;
 
 /**
- * A delegate to be called by the {@link ResultadosApiController}}.
- * Implement this interface with a {@link org.springframework.stereotype.Service} annotated class.
+ * Delegado para {@link ResultadosApiController}: contiene la lógica de negocio del endpoint de resultados.
+ * Implementa esta interfaz con una clase anotada con {@link org.springframework.stereotype.Service}
+ * para proporcionar la implementación real.
+ * Generada automáticamente por OpenAPI Generator.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 public interface ResultadosApiDelegate {
 
+    /**
+     * Devuelve la petición web nativa actual, si está disponible.
+     * Sirve para acceder a las cabeceras HTTP (por ejemplo, el header {@code Accept}).
+     *
+     * @return un {@link Optional} con la petición actual, vacío si no hay contexto de petición
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     default Optional<NativeWebRequest> getRequest() {
         return Optional.empty();
     }
 
     /**
-     * POST /Resultados
+     * Implementación por defecto del endpoint {@code POST /Resultados}.
+     * Devuelve respuestas de ejemplo según el tipo de contenido solicitado en la cabecera {@code Accept}.
+     * Las subclases deben sobreescribir este método para la lógica real.
      *
-     * @param nombreUsuario (optional)
-     * @param tok           (optional)
-     * @return Created (status code 201)
-     * or Bad Request (status code 400)
+     * @param nombreUsuario el nombre del usuario que realizó la solicitud (opcional)
+     * @param tok           el token numérico que identifica la solicitud (opcional)
+     * @return código 201 con los resultados si se encontraron, o 400 si los datos son incorrectos
      * @see ResultadosApi#resultadosPost
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     default ResponseEntity<ResultsResponse> resultadosPost(String nombreUsuario,
                                                            Integer tok) {

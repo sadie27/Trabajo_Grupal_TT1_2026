@@ -5,8 +5,11 @@ import org.trabajott1.model.Solicitud;
 
 /**
  * DTO Wrapper para manejar la estructura JSON que envía el cliente.
- * El cliente envía: {"solicitud": {"cantidadesIniciales": [...], ...}}
- * Este wrapper desempaqueta el objeto anidado.
+ * El cliente puede enviar el cuerpo como: {@code {"solicitud": {"cantidadesIniciales": [...], ...}}}.
+ * Este wrapper desempaqueta el objeto {@link org.trabajott1.model.Solicitud} anidado.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 public class SolicitudWrapper {
 
@@ -14,9 +17,11 @@ public class SolicitudWrapper {
     private Solicitud solicitud;
 
     /**
-     * Obtiene la solicitud contenida en el wrapper.
+     * Devuelve la solicitud extraída del cuerpo JSON.
      *
-     * @return El objeto {@link Solicitud}.
+     * @return el objeto {@link Solicitud} con los datos de la simulación
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public Solicitud getSolicitud() {
         return solicitud;
@@ -25,7 +30,9 @@ public class SolicitudWrapper {
     /**
      * Establece la solicitud en el wrapper.
      *
-     * @param solicitud El objeto {@link Solicitud} a establecer.
+     * @param solicitud el objeto {@link Solicitud} a guardar en el wrapper
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public void setSolicitud(Solicitud solicitud) {
         this.solicitud = solicitud;

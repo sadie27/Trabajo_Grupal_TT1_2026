@@ -10,18 +10,26 @@ import java.util.Arrays;
 import java.util.Objects;
 
 /**
- * ResultsResponse
+ * Respuesta del endpoint de consulta de resultados de simulación.
+ * Contiene el estado de la operación, el token de la solicitud, los datos de la simulación
+ * y un mensaje de error si algo fue mal.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
-
 @Generated(value = "org.openapitools.codegen.languages.SpringCodegen", date = "2026-04-14T15:27:37.393153+02:00[Europe/Madrid]", comments = "Generator version: 7.21.0")
 public class ResultsResponse {
 
+    /** Indica si la consulta de resultados fue exitosa. */
     private @Nullable Boolean done;
 
+    /** Token de la solicitud de simulación consultada. */
     private @Nullable Integer tokenSolicitud;
 
+    /** Mensaje de error si la consulta no fue exitosa; no presente si fue correcta. */
     private JsonNullable<String> errorMessage = JsonNullable.<String>undefined();
 
+    /** Datos de la simulación en formato de texto (p.ej. series temporales del grid). */
     private JsonNullable<String> data = JsonNullable.<String>undefined();
 
     private static <T> boolean equalsNullable(JsonNullable<T> a, JsonNullable<T> b) {

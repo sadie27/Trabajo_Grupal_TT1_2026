@@ -17,6 +17,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.when;
 
+/**
+ * Tests unitarios para {@link SolicitudApiDelegateImpl}.
+ * Verifica que el delegate devuelve los códigos HTTP correctos para cada endpoint de solicitud.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
+ */
 @ExtendWith(MockitoExtension.class)
 class SolicitudApiDelegateImplTest {
 
@@ -25,11 +32,23 @@ class SolicitudApiDelegateImplTest {
 
     private SolicitudApiDelegateImpl solicitudApiDelegate;
 
+    /**
+     * Inicializa el delegate con el mock del servicio antes de cada test.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @BeforeEach
     void setUp() {
         solicitudApiDelegate = new SolicitudApiDelegateImpl(solicitudService);
     }
 
+    /**
+     * Verifica que al comprobar una solicitud existente se devuelve HTTP 200 con el estado correcto.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void solicitudComprobarSolicitudGet_Success() {
         List<Integer> mockResult = List.of(1, 0);
@@ -41,6 +60,12 @@ class SolicitudApiDelegateImplTest {
         assertEquals(mockResult, response.getBody());
     }
 
+    /**
+     * Verifica que si el servicio lanza excepción al comprobar la solicitud, el delegate devuelve HTTP 400.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void solicitudComprobarSolicitudGet_BadRequest() {
         when(solicitudService.comprobarSolicitud(any(), any())).thenThrow(new IllegalArgumentException("Error"));
@@ -50,6 +75,12 @@ class SolicitudApiDelegateImplTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
+    /**
+     * Verifica que al obtener las solicitudes de un usuario se devuelve HTTP 200 con la lista de tokens.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void solicitudGetSolicitudesUsuarioGet_Success() {
         List<Integer> mockResult = List.of(12345, 67890);
@@ -61,6 +92,12 @@ class SolicitudApiDelegateImplTest {
         assertEquals(mockResult, response.getBody());
     }
 
+    /**
+     * Verifica que si el servicio lanza excepción al listar solicitudes, el delegate devuelve HTTP 400.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void solicitudGetSolicitudesUsuarioGet_BadRequest() {
         when(solicitudService.getSolicitudesUsuario(any())).thenThrow(new IllegalArgumentException("Error"));
@@ -70,6 +107,12 @@ class SolicitudApiDelegateImplTest {
         assertEquals(HttpStatus.BAD_REQUEST, response.getStatusCode());
     }
 
+    /**
+     * Verifica que al crear una solicitud con datos válidos se devuelve HTTP 201 con el token asignado.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void solicitudSolicitarPost_Success() {
         Solicitud solicitud = new Solicitud();
@@ -82,6 +125,12 @@ class SolicitudApiDelegateImplTest {
         assertEquals(mockResponse, response.getBody());
     }
 
+    /**
+     * Verifica que si el servicio lanza excepción al crear la solicitud, el delegate devuelve HTTP 400.
+     *
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Test
     void solicitudSolicitarPost_BadRequest() {
         when(solicitudService.crearSolicitud(any(), any())).thenThrow(new IllegalArgumentException("Error"));
