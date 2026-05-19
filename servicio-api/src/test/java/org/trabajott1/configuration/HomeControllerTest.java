@@ -2,6 +2,10 @@ package org.trabajott1.configuration;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.test.web.servlet.MockMvc;
 
@@ -15,7 +19,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Lucas, Ana, Clara, Santiago
  * @version 1.0
  */
-@WebMvcTest(HomeController.class)
+@WebMvcTest(
+        value = HomeController.class,
+        excludeAutoConfiguration = {
+                RabbitAutoConfiguration.class,
+                DataSourceAutoConfiguration.class,
+                DataSourceTransactionManagerAutoConfiguration.class,
+                HibernateJpaAutoConfiguration.class
+        }
+)
 class HomeControllerTest {
 
     @Autowired

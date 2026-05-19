@@ -3,6 +3,10 @@ package org.trabajott1.api.impl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -27,7 +31,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Lucas, Ana, Clara, Santiago
  * @version 1.0
  */
-@WebMvcTest(DashboardController.class)
+@WebMvcTest(
+        value = DashboardController.class,
+        excludeAutoConfiguration = {
+                RabbitAutoConfiguration.class,
+                DataSourceAutoConfiguration.class,
+                DataSourceTransactionManagerAutoConfiguration.class,
+                HibernateJpaAutoConfiguration.class
+        }
+)
 class DashboardControllerTest {
 
     @Autowired

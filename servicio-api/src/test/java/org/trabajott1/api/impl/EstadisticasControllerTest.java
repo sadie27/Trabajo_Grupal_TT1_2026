@@ -3,6 +3,10 @@ package org.trabajott1.api.impl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.amqp.RabbitAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
+import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
+import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
@@ -24,7 +28,15 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  * @author Lucas, Ana, Clara, Santiago
  * @version 1.0
  */
-@WebMvcTest(EstadisticasController.class)
+@WebMvcTest(
+        value = EstadisticasController.class,
+        excludeAutoConfiguration = {
+                RabbitAutoConfiguration.class,
+                DataSourceAutoConfiguration.class,
+                DataSourceTransactionManagerAutoConfiguration.class,
+                HibernateJpaAutoConfiguration.class
+        }
+)
 class EstadisticasControllerTest {
 
     @Autowired
