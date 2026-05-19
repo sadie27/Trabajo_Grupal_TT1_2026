@@ -1,5 +1,5 @@
 #!/bin/bash
-for i in $(seq 1 20); do
+for i in $(seq 1 100); do
   NUMENTIDADES=$((RANDOM % 5 + 2))
   CANTIDADES='['
   NOMBRES='['
