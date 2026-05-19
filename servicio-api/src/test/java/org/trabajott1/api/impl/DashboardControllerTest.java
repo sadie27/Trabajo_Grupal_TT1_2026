@@ -17,6 +17,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
 import org.trabajott1.service.EmailService;
+import org.trabajott1.service.EstadisticasService;
 import org.trabajott1.service.ResultadosService;
 import org.trabajott1.service.SolicitudService;
 
@@ -60,6 +61,9 @@ class DashboardControllerTest {
 
     @MockBean
     private SolicitudService solicitudService;
+
+    @MockBean
+    private EstadisticasService estadisticasService;
 
     private RestTemplate mockRestTemplate;
 

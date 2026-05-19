@@ -10,6 +10,7 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
 import org.trabajott1.service.EmailService;
+import org.trabajott1.service.EstadisticasService;
 import org.trabajott1.service.ResultadosService;
 import org.trabajott1.service.SolicitudService;
 
@@ -45,6 +46,9 @@ class HomeControllerTest {
 
     @MockBean
     private SolicitudService solicitudService;
+
+    @MockBean
+    private EstadisticasService estadisticasService;
 
     /**
      * Verifica que {@code GET /} responde con HTTP 302 y la cabecera Location

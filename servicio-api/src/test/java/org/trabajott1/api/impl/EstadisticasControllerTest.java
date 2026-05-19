@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.trabajott1.service.EstadisticasService;
 import org.trabajott1.service.EstadisticasService.EstadisticasResponse;
+import org.trabajott1.service.ResultadosService;
 
 import java.util.List;
 
@@ -44,6 +45,9 @@ class EstadisticasControllerTest {
 
     @MockBean
     private EstadisticasService estadisticasService;
+
+    @MockBean
+    private ResultadosService resultadosService;
 
     @Autowired
     private ObjectMapper objectMapper;
