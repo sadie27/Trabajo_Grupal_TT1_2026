@@ -1,0 +1,1080 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Worker Dashboard — Vida Artificial</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Mulish:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+
+  <style>
+    :root {
+      --bg: #f3f2ee;
+      --surface: #ffffff;
+      --surface-2: #eceae4;
+      --border: rgba(0, 0, 0, 0.07);
+      --border-2: rgba(0, 0, 0, 0.12);
+      --text: #111318;
+      --text-2: #6b6e82;
+      --text-3: #b0b3c6;
+      --accent: #9e7a28;
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --red: #c44d62;
+      --blue: #3680be;
+      --green: #2a9e54;
+      --yellow: #a87e18;
+      --orange: #b45e2c;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Mulish', sans-serif;
+      font-weight: 400;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .layout {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 64px 40px 96px;
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 48px;
+      margin-bottom: 64px;
+      flex-wrap: wrap;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 1px;
+      background: var(--text-3);
+      flex-shrink: 0;
+    }
+
+    h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.8rem, 5vw, 3.8rem);
+      line-height: 0.93;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .tagline {
+      margin-top: 16px;
+      font-size: 0.875rem;
+      color: var(--text-2);
+      font-weight: 300;
+      line-height: 1.65;
+      max-width: 40ch;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 20px;
+      padding: 6px 14px 6px 10px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--text-2);
+      margin-top: 24px;
+    }
+
+    .status-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--text-3);
+      flex-shrink: 0;
+      transition: background 300ms var(--ease-out);
+    }
+
+    .status-dot.live {
+      background: var(--green);
+      animation: pulse 2s ease-in-out infinite;
+    }
+
+    .status-dot.error {
+      background: var(--red);
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        opacity: 1;
+      }
+
+      50% {
+        opacity: 0.45;
+      }
+    }
+
+    /* Divider */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 52px;
+    }
+
+    /* ── Architecture Canvas ── */
+    .arch-wrap {
+      margin-bottom: 56px;
+    }
+
+    .arch-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .arch-legend {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .legend-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .arch-canvas-wrap {
+      position: relative;
+      width: 100%;
+      height: 300px;
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    #archCanvas {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    /* ── Stats grid ── */
+    .stats-row {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-bottom: 56px;
+    }
+
+    .stat-item {
+      padding-right: 36px;
+      position: relative;
+    }
+
+    .stat-item:not(:first-child) {
+      padding-left: 36px;
+    }
+
+    .stat-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 14px;
+    }
+
+    .stat-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      color: var(--text);
+      margin-bottom: 6px;
+      transition: color 300ms var(--ease-out);
+    }
+
+    .stat-value.c-green {
+      color: var(--green);
+    }
+
+    .stat-value.c-blue {
+      color: var(--blue);
+    }
+
+    .stat-value.c-orange {
+      color: var(--orange);
+    }
+
+    .stat-value.c-yellow {
+      color: var(--yellow);
+    }
+
+    .stat-sub {
+      font-size: 0.775rem;
+      color: var(--text-3);
+      font-weight: 300;
+      line-height: 1.55;
+    }
+
+    .stat-value.loading {
+      color: transparent !important;
+      background: linear-gradient(90deg, var(--surface-2) 25%, #e2e0da 50%, var(--surface-2) 75%);
+      background-size: 200% 100%;
+      border-radius: 3px;
+      animation: shimmer 1.4s infinite;
+      width: 90px;
+      height: 2.2rem;
+      display: block;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    /* ── Section title ── */
+    .section-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-2);
+    }
+
+    /* ── Channels table ── */
+    .channels-table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .channels-table th {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      text-align: left;
+      padding: 0 16px 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .channels-table td {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-2);
+      padding: 12px 16px 12px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .channels-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .channels-table td.num {
+      color: var(--text);
+      font-size: 1rem;
+    }
+
+    .channels-table td.unacked.has-unacked {
+      color: var(--orange);
+    }
+
+    .empty-channels {
+      font-size: 0.82rem;
+      color: var(--text-3);
+      font-weight: 300;
+      padding: 20px 0;
+    }
+
+    .updated-at {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.78rem;
+      color: var(--text-3);
+      letter-spacing: 0.05em;
+      margin-top: 32px;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .layout {
+        padding: 40px 20px 72px;
+      }
+
+      .stats-row {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 32px 0;
+      }
+
+      .stat-item:nth-child(2)::after,
+      .stat-item:nth-child(4)::after {
+        display: none;
+      }
+
+      .stat-item {
+        padding-right: 20px;
+      }
+
+      .stat-item:not(:first-child) {
+        padding-left: 20px;
+      }
+
+      .arch-canvas-wrap {
+        height: 220px;
+      }
+
+      .arch-legend {
+        display: none;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .status-dot {
+        animation: none;
+      }
+
+      .stat-value.loading {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+
+    <header class="header">
+      <div>
+        <p class="eyebrow">Universidad de La Rioja · TT1 2025–26</p>
+        <h1>Worker<br><em>Dashboard</em></h1>
+        <p class="tagline">Estado en tiempo real de los workers de simulación vía RabbitMQ.</p>
+        <div class="status-pill">
+          <span class="status-dot" id="statusDot"></span>
+          <span id="statusText">Conectando…</span>
+        </div>
+      </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <!-- Architecture diagram -->
+    <div class="arch-wrap">
+      <div class="arch-header">
+        <p class="section-title">Flujo de sistema</p>
+        <div class="arch-legend">
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#4c9ee8"></span>Publicación
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#33c46e"></span>Procesamiento
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot" style="background:#33b89a"></span>Escritura DB
+          </div>
+        </div>
+      </div>
+      <div class="arch-canvas-wrap">
+        <canvas id="archCanvas"></canvas>
+      </div>
+    </div>
+
+    <!-- Stats -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <p class="stat-label">Cola pendiente</p>
+        <p class="stat-value loading" id="valQueueDepth"></p>
+        <p class="stat-sub">Mensajes en simulation_queue</p>
+      </div>
+      <div class="stat-item">
+        <p class="stat-label">Consumers activos</p>
+        <p class="stat-value loading" id="valConsumers"></p>
+        <p class="stat-sub">Workers escuchando</p>
+      </div>
+      <div class="stat-item">
+        <p class="stat-label">Tasa de entrega</p>
+        <p class="stat-value loading" id="valDeliver"></p>
+        <p class="stat-sub">msg/s procesados</p>
+      </div>
+      <div class="stat-item">
+        <p class="stat-label">Tasa de publicación</p>
+        <p class="stat-value loading" id="valPublish"></p>
+        <p class="stat-sub">msg/s encolados</p>
+      </div>
+    </div>
+
+    <p class="section-title">Canales activos</p>
+
+    <table class="channels-table" id="channelsTable">
+      <thead>
+        <tr>
+          <th>Worker</th>
+          <th>Consumers</th>
+          <th>Sin confirmar</th>
+        </tr>
+      </thead>
+      <tbody id="channelsBody">
+        <tr>
+          <td colspan="3" class="empty-channels">Cargando…</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <p class="updated-at" id="updatedAt"></p>
+
+  </div>
+
+  <script>
+    // ─────────────────────────────────────────────────────────────────
+    // STATS PANEL
+    // ─────────────────────────────────────────────────────────────────
+    const POLL_MS = 2000;
+
+    const dot = document.getElementById('statusDot');
+    const txt = document.getElementById('statusText');
+    const elQD = document.getElementById('valQueueDepth');
+    const elCN = document.getElementById('valConsumers');
+    const elDR = document.getElementById('valDeliver');
+    const elPR = document.getElementById('valPublish');
+    const tbody = document.getElementById('channelsBody');
+    const upAt = document.getElementById('updatedAt');
+
+    function fmtRate(n) { return Number.isFinite(n) ? n.toFixed(1) : '—'; }
+
+    function setVal(el, text, colorClass) {
+      el.classList.remove('loading', 'c-green', 'c-blue', 'c-orange', 'c-yellow');
+      el.textContent = text;
+      if (colorClass) el.classList.add(colorClass);
+    }
+
+    // ─────────────────────────────────────────────────────────────────
+    // CANVAS ARCHITECTURE SYSTEM
+    // ─────────────────────────────────────────────────────────────────
+    const canvas = document.getElementById('archCanvas');
+    const ctx = canvas.getContext('2d');
+
+    // Logical dimensions (CSS px)
+    let W = 0, H = 0;
+    let pathsCache = null;
+    let nodesCache = null;
+    let apiData = null;
+    let lastTime = null;
+
+    // ── Colors ──
+    const C = {
+      blue: '#4c9ee8',
+      green: '#33c46e',
+      teal: '#33b89a',
+      amber: '#d4a332',
+      orange: '#c46030',
+      idle: '#c0c2d0',
+      text: '#111318',
+      textMid: '#6b6e82',
+      textDim: '#b0b3c6',
+    };
+
+    // ── Bezier interpolation ──
+    function bezier(t, p) {
+      const m = 1 - t;
+      return {
+        x: m * m * m * p.p0.x + 3 * m * m * t * p.c1.x + 3 * m * t * t * p.c2.x + t * t * t * p.p3.x,
+        y: m * m * m * p.p0.y + 3 * m * m * t * p.c1.y + 3 * m * t * t * p.c2.y + t * t * t * p.p3.y,
+      };
+    }
+
+    // ── Particle class ──
+    class Particle {
+      constructor(path, color, speed, delay) {
+        this.path = path;
+        this.color = color;
+        this.speed = speed;
+        this.t = -(delay || 0); // negative t = waiting to start
+        this.alive = true;
+        this.r = 2.5 + Math.random() * 1.5;
+      }
+
+      update(dt) {
+        this.t += this.speed * dt;
+        if (this.t >= 1) { this.alive = false; }
+      }
+
+      draw(ctx) {
+        if (this.t < 0) return;
+        const pos = bezier(this.t, this.path);
+        // Fade in at start, fade out at end
+        const alpha = this.t < 0.08 ? this.t / 0.08
+          : this.t > 0.88 ? (1 - this.t) / 0.12
+            : 1;
+
+        // Glow halo
+        const g = ctx.createRadialGradient(pos.x, pos.y, 0, pos.x, pos.y, this.r * 3.5);
+        g.addColorStop(0, hexAlpha(this.color, 0.7 * alpha));
+        g.addColorStop(0.45, hexAlpha(this.color, 0.35 * alpha));
+        g.addColorStop(1, hexAlpha(this.color, 0));
+        ctx.fillStyle = g;
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, this.r * 3.5, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Core
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = '#ffffff';
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, this.r * 0.55, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.globalAlpha = 1;
+      }
+    }
+
+    function hexAlpha(hex, a) {
+      // Convert hex + alpha to rgba string
+      const r = parseInt(hex.slice(1, 3), 16);
+      const g = parseInt(hex.slice(3, 5), 16);
+      const b = parseInt(hex.slice(5, 7), 16);
+      return `rgba(${r},${g},${b},${a.toFixed(3)})`;
+    }
+
+    // ── Particle pool & emitters ──
+    let particles = [];
+    const emitTimers = {};
+
+    function initEmitTimers() {
+      emitTimers.api = Math.random() * 1200;
+      for (let i = 0; i < 5; i++) {
+        emitTimers['q' + i] = Math.random() * 1800;
+        emitTimers['w' + i] = Math.random() * 2000;
+      }
+    }
+
+    function rateFor(key, data) {
+      const pub = data?.publishRate || 0;
+      const del = data?.deliverRate || 0;
+      const con = Math.max(1, data?.consumerCount || 1);
+
+      if (key === 'api') return Math.max(0.35, Math.min(5, pub * 0.5 + 0.35));
+
+      if (key[0] === 'q') {
+        const i = +key[1];
+        const ch = data?.channels?.[i];
+        if (!data || con === 0) return 0.12;
+        return Math.max(0.12, Math.min(4, (del / con) * 0.5 + 0.12));
+      }
+
+      if (key[0] === 'w') {
+        const i = +key[1];
+        const ch = data?.channels?.[i];
+        if (!ch || ch.unackedCount === 0) return 0.07;
+        return Math.max(0.1, Math.min(3, (del / con) * 0.4 + 0.1));
+      }
+
+      return 0.1;
+    }
+
+    function tick_emitters(dt) {
+      if (!pathsCache) return;
+
+      // API → Queue
+      emitTimers.api -= dt;
+      if (emitTimers.api <= 0) {
+        const r = rateFor('api', apiData);
+        particles.push(new Particle(pathsCache.apiQ, C.blue, 0.00046));
+        emitTimers.api = 1000 / r;
+      }
+
+      // Queue → Workers  &  Workers → MySQL
+      for (let i = 0; i < 5; i++) {
+        // Queue → Worker
+        emitTimers['q' + i] -= dt;
+        if (emitTimers['q' + i] <= 0) {
+          const r = rateFor('q' + i, apiData);
+          particles.push(new Particle(pathsCache.qW[i], C.green, 0.00050));
+          emitTimers['q' + i] = 1000 / r;
+        }
+
+        // Worker → MySQL
+        emitTimers['w' + i] -= dt;
+        if (emitTimers['w' + i] <= 0) {
+          const r = rateFor('w' + i, apiData);
+          particles.push(new Particle(pathsCache.wM[i], C.teal, 0.00048));
+          emitTimers['w' + i] = 1000 / r;
+        }
+      }
+
+      // Cap pool
+      if (particles.length > 300) particles = particles.filter(p => p.t > 0.05);
+      particles = particles.filter(p => p.alive);
+    }
+
+    // ── Node layout ──
+    function buildLayout() {
+      const PAD = Math.min(72, W * 0.07);
+      const NW = Math.min(78, W * 0.085);  // regular node width
+      const NH = 34;
+      const WNW = Math.min(66, W * 0.072);  // worker node width
+      const WNH = 27;
+      const QW = NW + 10;
+
+      const apiX = PAD + NW / 2;
+      const qX = W * 0.365;
+      const wX = W * 0.63;
+      const mX = W - PAD - NW / 2;
+      const midY = H * 0.5;
+
+      // Worker Y positions — spread evenly with padding
+      const wPad = H * 0.10;
+      const wSpan = H - wPad * 2;
+      const wYs = [0, 1, 2, 3, 4].map(i => wPad + (wSpan / 4) * i);
+
+      const api = { x: apiX, y: midY, w: NW, h: NH, label: 'API', sub: 'Gateway', color: C.blue };
+      const queue = { x: qX, y: midY, w: QW, h: NH, label: 'COLA', sub: 'queue', color: C.orange };
+      const mysql = { x: mX, y: midY, w: NW, h: NH, label: 'MySQL', sub: 'Database', color: C.teal };
+      const workers = wYs.map((wy, i) => ({
+        x: wX, y: wy, w: WNW, h: WNH,
+        label: 'W-' + (i + 1), state: 'idle',
+      }));
+
+      return { api, queue, mysql, workers };
+    }
+
+    function buildPaths(n) {
+      // Helper: get midpoint for bezier
+      function make(ax, ay, bx, by) {
+        const dx = bx - ax;
+        return {
+          p0: { x: ax, y: ay },
+          c1: { x: ax + dx * 0.45, y: ay },
+          c2: { x: ax + dx * 0.55, y: by },
+          p3: { x: bx, y: by },
+        };
+      }
+
+      const apiR = n.api.x + n.api.w / 2;
+      const qL = n.queue.x - n.queue.w / 2;
+      const qR = n.queue.x + n.queue.w / 2;
+      const qY = n.queue.y;
+      const mL = n.mysql.x - n.mysql.w / 2;
+      const mY = n.mysql.y;
+
+      return {
+        apiQ: make(apiR, n.api.y, qL, qY),
+        qW: n.workers.map(w => make(qR, qY, w.x - w.w / 2, w.y)),
+        wM: n.workers.map(w => make(w.x + w.w / 2, w.y, mL, mY)),
+      };
+    }
+
+    // ── Draw helpers ──
+    function rrect(ctx, x, y, w, h, r) {
+      const hw = w / 2, hh = h / 2;
+      ctx.beginPath();
+      ctx.moveTo(x - hw + r, y - hh);
+      ctx.lineTo(x + hw - r, y - hh);
+      ctx.arcTo(x + hw, y - hh, x + hw, y - hh + r, r);
+      ctx.lineTo(x + hw, y + hh - r);
+      ctx.arcTo(x + hw, y + hh, x + hw - r, y + hh, r);
+      ctx.lineTo(x - hw + r, y + hh);
+      ctx.arcTo(x - hw, y + hh, x - hw, y + hh - r, r);
+      ctx.lineTo(x - hw, y - hh + r);
+      ctx.arcTo(x - hw, y - hh, x - hw + r, y - hh, r);
+      ctx.closePath();
+    }
+
+    function drawConn(path, color, active) {
+      const opacity   = active ? 0.85 : 0.25;
+      const lineWidth = active ? 2.5  : 1.5;
+
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lineWidth;
+      if (!active) ctx.setLineDash([3, 6]);
+      ctx.beginPath();
+      ctx.moveTo(path.p0.x, path.p0.y);
+      ctx.bezierCurveTo(path.c1.x, path.c1.y, path.c2.x, path.c2.y, path.p3.x, path.p3.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      // Arrow tip
+      const t1 = 0.96, t2 = 1.0;
+      const pa = bezier(t1, path), pb = bezier(t2, path);
+      const ang = Math.atan2(pb.y - pa.y, pb.x - pa.x);
+      const L = active ? 7 : 5.5;
+      ctx.save();
+      ctx.globalAlpha = opacity;
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(pb.x, pb.y);
+      ctx.lineTo(pb.x - L * Math.cos(ang - 0.45), pb.y - L * Math.sin(ang - 0.45));
+      ctx.lineTo(pb.x - L * Math.cos(ang + 0.45), pb.y - L * Math.sin(ang + 0.45));
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawNode(nd, ts) {
+      const { x, y, w, h, label, sub, color } = nd;
+      const r = 5;
+
+      // Shadow
+      ctx.shadowColor = 'rgba(0,0,0,0.09)';
+      ctx.shadowBlur = 10;
+      ctx.shadowOffsetY = 2;
+      rrect(ctx, x, y, w, h, r);
+      ctx.fillStyle = 'rgba(255,255,255,0.96)';
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
+      // Border
+      rrect(ctx, x, y, w, h, r);
+      ctx.strokeStyle = color || C.idle;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Label
+      ctx.fillStyle = C.text;
+      ctx.font = `700 ${Math.max(10, w * 0.14)}px 'Barlow Condensed', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, x, y - 2);
+
+      // Sub-label
+      ctx.fillStyle = C.textDim;
+      ctx.font = `400 ${Math.max(8, w * 0.10)}px 'Barlow Condensed', sans-serif`;
+      ctx.fillText(sub, x, y + h * 0.26);
+    }
+
+    function workerColor(state) {
+      if (state === 'active') return C.green;
+      if (state === 'connected') return C.amber;
+      return C.idle;
+    }
+
+    function drawWorker(wd, ts) {
+      const { x, y, w, h, label, state } = wd;
+      const r = 4;
+      const color = workerColor(state);
+
+      // Pulse glow for active workers
+      if (state === 'active') {
+        const p = 0.5 + 0.5 * Math.sin(ts * 0.0032);
+        ctx.shadowColor = hexAlpha(C.green, 0.4);
+        ctx.shadowBlur = 4 + p * 9;
+        ctx.shadowOffsetY = 0;
+      } else {
+        ctx.shadowColor = 'rgba(0,0,0,0.07)';
+        ctx.shadowBlur = 7;
+        ctx.shadowOffsetY = 1;
+      }
+
+      rrect(ctx, x, y, w, h, r);
+      ctx.fillStyle = state === 'idle'
+        ? 'rgba(255,255,255,0.80)'
+        : 'rgba(255,255,255,0.96)';
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+      ctx.shadowOffsetY = 0;
+
+      rrect(ctx, x, y, w, h, r);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      // Status dot
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(x - w / 2 + 9, y, 3, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Label
+      ctx.fillStyle = state === 'idle' ? C.textDim : C.text;
+      ctx.font = `600 ${Math.max(9, w * 0.145)}px 'Barlow Condensed', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, x + 4, y);
+    }
+
+    function drawQueueBadge(nd, count) {
+      if (!count || count <= 0) return;
+      const bx = nd.x + nd.w / 2 + 1;
+      const by = nd.y - nd.h / 2 - 1;
+      const r = count > 99 ? 13 : count > 9 ? 10 : 9;
+
+      ctx.shadowColor = hexAlpha(C.orange, 0.5);
+      ctx.shadowBlur = 10;
+      ctx.fillStyle = C.orange;
+      ctx.beginPath();
+      ctx.arc(bx, by, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.shadowColor = 'transparent';
+      ctx.shadowBlur = 0;
+
+      ctx.fillStyle = '#fff';
+      ctx.font = `700 ${count > 99 ? 7 : count > 9 ? 8 : 9}px 'Barlow Condensed', sans-serif`;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(count > 999 ? '999+' : String(count), bx, by);
+    }
+
+    // ── Section labels drawn on canvas ──
+    function drawSectionLabel(text, x, y, align) {
+      ctx.save();
+      ctx.font = `500 9px 'Barlow Condensed', sans-serif`;
+      ctx.fillStyle = C.textDim;
+      ctx.globalAlpha = 0.6;
+      ctx.textAlign = align || 'center';
+      ctx.textBaseline = 'top';
+      ctx.fillText(text.toUpperCase(), x, y);
+      ctx.restore();
+    }
+
+    // ── Build stable IP→worker-name map from channel list ──
+    function buildWorkerMap(channels) {
+      const ips = [...new Set(
+        channels.map(ch => ch.connectionName.split('->')[0].trim().split(':')[0])
+      )].sort();
+      const map = {};
+      ips.forEach((ip, i) => { map[ip] = 'W-' + (i + 1); });
+      return map;
+    }
+
+    function workerNameFor(connectionName, workerMap) {
+      const ip = connectionName.split('->')[0].trim().split(':')[0];
+      return workerMap[ip] || connectionName;
+    }
+
+    // ── Sync worker states from API data ──
+    function applyWorkerStates(workers, data) {
+      const channels = data?.channels || [];
+      const workerMap = buildWorkerMap(channels);
+
+      // Build a map: worker-name → best channel state
+      const stateByName = {};
+      channels.forEach(ch => {
+        const name = workerNameFor(ch.connectionName, workerMap);
+        const cur = stateByName[name];
+        const next = ch.unackedCount > 0 ? 'active' : 'connected';
+        // 'active' wins over 'connected'
+        if (!cur || next === 'active') stateByName[name] = next;
+      });
+
+      workers.forEach(w => {
+        w.state = stateByName[w.label] || 'idle';
+      });
+    }
+
+    // ── Main render loop ──
+    function render(ts) {
+      if (!lastTime) lastTime = ts;
+      const dt = Math.min(ts - lastTime, 50);
+      lastTime = ts;
+
+      // Recalculate layout if canvas was resized
+      const rect = canvas.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const newW = rect.width;
+      const newH = rect.height;
+
+      if (Math.abs(newW - W) > 0.5 || Math.abs(newH - H) > 0.5) {
+        W = newW;
+        H = newH;
+        canvas.width = W * dpr;
+        canvas.height = H * dpr;
+        ctx.scale(dpr, dpr);
+        nodesCache = buildLayout();
+        pathsCache = buildPaths(nodesCache);
+      }
+
+      if (!W || !H) { requestAnimationFrame(render); return; }
+
+      ctx.clearRect(0, 0, W, H);
+
+      // ── Apply latest data to workers ──
+      if (nodesCache) applyWorkerStates(nodesCache.workers, apiData);
+
+      // ── Draw connections (dashed lines) ──
+      if (pathsCache) {
+        const consumerCount = apiData?.consumerCount || 0;
+        const deliverRate = apiData?.deliverRate || 0;
+
+        const publishActive = (apiData?.publishRate || 0) > 0;
+        drawConn(pathsCache.apiQ, C.blue, publishActive);
+
+        pathsCache.qW.forEach((p, i) => {
+          const w = nodesCache.workers[i];
+          const workerHasConsumers = (apiData?.channels || [])
+            .some(ch => ch.connectionName && workerNameFor(ch.connectionName, buildWorkerMap(apiData.channels)) === w.label && ch.consumerCount > 0);
+          drawConn(p, C.green, deliverRate > 0 && workerHasConsumers);
+        });
+
+        pathsCache.wM.forEach((p, i) => {
+          const w = nodesCache.workers[i];
+          const hasUnacked = (apiData?.channels || [])
+            .some(ch => ch.connectionName && workerNameFor(ch.connectionName, buildWorkerMap(apiData.channels)) === w.label && ch.unackedCount > 0);
+          drawConn(p, C.teal, hasUnacked);
+        });
+      }
+
+      // ── Update & draw particles ──
+      tick_emitters(dt);
+      ctx.save();
+      particles.forEach(p => p.draw(ctx));
+      ctx.restore();
+
+      // ── Draw nodes ──
+      if (nodesCache) {
+        // Workers first (behind main nodes in z-order concept)
+        nodesCache.workers.forEach(w => drawWorker(w, ts));
+
+        // Main nodes
+        drawNode(nodesCache.api, ts);
+        drawNode(nodesCache.queue, ts);
+        drawNode(nodesCache.mysql, ts);
+
+        // Queue badge
+        const qd = apiData?.queueDepth || 0;
+        drawQueueBadge(nodesCache.queue, qd);
+
+        // Section labels
+        const wX = nodesCache.workers[0].x;
+        drawSectionLabel('Workers', wX, 4, 'center');
+      }
+
+      requestAnimationFrame(render);
+    }
+
+    // ── Poll API ──
+    async function poll() {
+      try {
+        const res = await fetch('/Dashboard/Stats');
+        if (!res.ok) throw new Error(`HTTP ${res.status}`);
+        const d = await res.json();
+
+        apiData = d;
+
+        dot.className = 'status-dot live';
+        txt.textContent = 'En vivo';
+
+        setVal(elQD, d.queueDepth, d.queueDepth > 0 ? 'c-orange' : 'c-green');
+        setVal(elCN, d.consumerCount, d.consumerCount > 0 ? 'c-green' : null);
+        setVal(elDR, fmtRate(d.deliverRate), 'c-blue');
+        setVal(elPR, fmtRate(d.publishRate), 'c-yellow');
+
+        if (!d.channels || d.channels.length === 0) {
+          tbody.innerHTML = '<tr><td colspan="3" class="empty-channels">Sin canales activos.</td></tr>';
+        } else {
+          const workerMap = buildWorkerMap(d.channels);
+          tbody.innerHTML = d.channels.map(ch => `
+            <tr>
+              <td>${workerNameFor(ch.connectionName, workerMap)}</td>
+              <td class="num">${ch.consumerCount}</td>
+              <td class="num unacked ${ch.unackedCount > 0 ? 'has-unacked' : ''}">${ch.unackedCount}</td>
+            </tr>`).join('');
+        }
+
+        upAt.textContent = `Actualizado ${new Date().toLocaleTimeString('es-ES')}`;
+
+      } catch {
+        dot.className = 'status-dot error';
+        txt.textContent = 'Sin conexión';
+        upAt.textContent = `Último intento ${new Date().toLocaleTimeString('es-ES')}`;
+      }
+    }
+
+    // ── Init ──
+    initEmitTimers();
+    requestAnimationFrame(render);
+    poll();
+    setInterval(poll, POLL_MS);
+  </script>
+</body>
+
+</html>
