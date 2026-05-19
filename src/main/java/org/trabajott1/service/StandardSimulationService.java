@@ -35,7 +35,7 @@ public class StandardSimulationService implements ISimulationService {
     /** Número de pasos de tiempo que dura la simulación. */
     private static final int MAX_TIME = 10;
 
-    /** Colores asignados a las especies en orden: cada color puede comerse al siguiente. */
+    /** Colores asignados a las especies. */
     private static final String[] COLORS = {"red", "blue", "green", "yellow"};
 
     /**
@@ -81,7 +81,7 @@ public class StandardSimulationService implements ISimulationService {
     private final EstadisticaPoblacionRepository estadisticaPoblacionRepository;
 
     /**
-     * Crea el servicio inyectando el repositorio de solicitudes.
+     * Crea el servicio inyectando el repositorio de solicitudes y de estadísticas.
      *
      * @param solicitudRepository el repositorio para acceder a los datos de las solicitudes
      * @param estadisticaPoblacionRepository el repositorio para las estadísticas
@@ -98,17 +98,17 @@ public class StandardSimulationService implements ISimulationService {
      * Si la solicitud no existe, no hace nada. Al terminar, marca la solicitud como "FINALIZADA".
      *
      * @param solicitudId       el ID interno de la solicitud en la base de datos
-     * @param entityNames       lista de nombres de las entidades participantes (entre 1 y 6)
+     * @param entityNames       lista de nombres de las entidades participantes (entre 1 y 4)
      * @param initialQuantities lista de cantidades iniciales de cada entidad, en el mismo orden
-     * @throws IllegalArgumentException si el número de entidades no está entre 1 y 6
+     * @throws IllegalArgumentException si el número de entidades no está entre 1 y 4
      * @author Lucas, Ana, Clara, Santiago
      * @version 1.0
      */
     @Override
     @Transactional
     public void executeSimulation(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
-        if (entityNames.size() < 1 || entityNames.size() > 6) {
-            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 6, se recibieron: " + entityNames.size());
+        if (entityNames.size() < 1 || entityNames.size() > 4) {
+            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 4, se recibieron: " + entityNames.size());
         }
 
         List<EstadisticaPoblacionEntity> stats = new ArrayList<>();
@@ -149,10 +149,7 @@ public class StandardSimulationService implements ISimulationService {
         sb.append(GRID_SIZE).append("\n");
 
         Map<String, String> colorMap = new HashMap<>();
-        if (entityNames.size() < 1 || entityNames.size() > 6) {
-            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 6, se recibieron: " + entityNames.size());
-        }
-        int numSpecies = Math.min(entityNames.size(), 6);
+        int numSpecies = Math.min(entityNames.size(), COLORS.length);
         for (int i = 0; i < numSpecies; i++) {
             colorMap.put(entityNames.get(i), COLORS[i]);
         }

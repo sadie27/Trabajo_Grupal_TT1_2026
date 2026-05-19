@@ -15,22 +15,48 @@ import java.util.*;
 
 /**
  * Implementación avanzada del servicio de simulación con nuevas reglas de cadena alimentaria y compartición de comida.
+ *
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Service
 @ConditionalOnProperty(name = "simulation.mode", havingValue = "advanced")
 public class AdvancedSimulationService implements ISimulationService {
 
     private static final Logger log = LoggerFactory.getLogger(AdvancedSimulationService.class);
+
+    /** Tamaño del lado del grid cuadrado donde viven las células. */
     private static final int GRID_SIZE = 8;
+
+    /** Número de pasos de tiempo que dura la simulación. */
     private static final int MAX_TIME = 10;
+
+    /** Colores asignados a las especies. */
     private static final String[] COLORS = {"red", "blue", "green", "yellow"};
 
+    /**
+     * Representa una célula en el grid de simulación.
+     * Guarda a qué especie pertenece, su color y si ha comido en el paso actual.
+     */
     private static class Cell {
+        /** Nombre de la especie a la que pertenece la célula. */
         String name;
+
+        /** Color de la célula, que determina su posición en la jerarquía alimentaria. */
         String color;
+
+        /** Indica si la célula ha comido en el paso de tiempo actual, lo que le permite reproducirse. */
         boolean hasEaten;
+
+        /** Indica si la célula tiene comida para compartir con otra de su especie. */
         boolean hasFoodToShare;
 
+        /**
+         * Crea una nueva célula con el nombre y color indicados.
+         *
+         * @param name  nombre de la especie
+         * @param color color asignado a la especie
+         */
         Cell(String name, String color) {
             this.name = name;
             this.color = color;
@@ -38,6 +64,11 @@ public class AdvancedSimulationService implements ISimulationService {
             this.hasFoodToShare = false;
         }
 
+        /**
+         * Crea una copia independiente de esta célula con el mismo nombre, color y estado de alimentación.
+         *
+         * @return una nueva instancia {@link Cell} con los mismos valores
+         */
         Cell copy() {
             Cell c = new Cell(name, color);
             c.hasEaten = this.hasEaten;
@@ -46,25 +77,40 @@ public class AdvancedSimulationService implements ISimulationService {
         }
     }
 
+    /** Repositorio para buscar y guardar las solicitudes de simulación en la base de datos. */
     private final SolicitudRepository solicitudRepository;
     private final EstadisticaPoblacionRepository estadisticaPoblacionRepository;
 
     /**
-     * Constructor de AdvancedSimulationService.
+     * Crea el servicio inyectando el repositorio de solicitudes y de estadísticas.
      *
-     * @param solicitudRepository El repositorio para acceder a los datos de las solicitudes.
-     * @param estadisticaPoblacionRepository El repositorio para las estadísticas.
+     * @param solicitudRepository el repositorio para acceder a los datos de las solicitudes
+     * @param estadisticaPoblacionRepository el repositorio para las estadísticas
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
      */
     public AdvancedSimulationService(SolicitudRepository solicitudRepository, EstadisticaPoblacionRepository estadisticaPoblacionRepository) {
         this.solicitudRepository = solicitudRepository;
         this.estadisticaPoblacionRepository = estadisticaPoblacionRepository;
     }
 
+    /**
+     * Ejecuta la simulación de vida artificial y guarda los resultados en la base de datos.
+     * Si la solicitud no existe, no hace nada. Al terminar, marca la solicitud como "FINALIZADA".
+     *
+     * @param solicitudId       el ID interno de la solicitud en la base de datos
+     * @param entityNames       lista de nombres de las entidades participantes (entre 1 y 4)
+     * @param initialQuantities lista de cantidades iniciales de cada entidad, en el mismo orden
+     * @throws IllegalArgumentException si el número de entidades no está entre 1 y 4
+     * @author Lucas, Ana, Clara, Santiago
+     * @version 1.0
+     */
     @Override
     @Transactional
     public void executeSimulation(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
-        // Simulamos carga de trabajo
-        try { Thread.sleep(5000); } catch (InterruptedException e) { Thread.currentThread().interrupt(); }
+        if (entityNames.size() < 1 || entityNames.size() > 4) {
+            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 4, se recibieron: " + entityNames.size());
+        }
 
         List<EstadisticaPoblacionEntity> stats = new ArrayList<>();
         String resultadoSimulacion = generateSimulationData(entityNames, initialQuantities, stats);
@@ -179,7 +225,7 @@ public class AdvancedSimulationService implements ISimulationService {
                             if (!occupant.name.equals(current.name)) {
                                 // Diferentes especies - Jerarquía de la cadena alimentaria
                                 if (canEat(current.color, occupant.color)) {
-                                    log.info("Comer Avanzado: {} ({}) se comió a {} ({})", current.name, current.color, occupant.name, occupant.color);
+                                    log.info("Comer: {} ({}) se comió a {} ({}) en [{}, {}]", current.name, current.color, occupant.name, occupant.color, nextY, nextX);
                                     Cell winner = current.copy();
                                     winner.hasEaten = true;
                                     // Lógica Azul: reserva comida al comer
@@ -189,7 +235,7 @@ public class AdvancedSimulationService implements ISimulationService {
                                     }
                                     nextGrid[nextY][nextX] = winner;
                                 } else if (canEat(occupant.color, current.color)) {
-                                    log.info("Comer Avanzado: {} ({}) se comió a {} ({})", occupant.name, occupant.color, current.name, current.color);
+                                    log.info("Comer: {} ({}) se comió a {} ({}) en [{}, {}]", occupant.name, occupant.color, current.name, current.color, nextY, nextX);
                                     occupant.hasEaten = true;
                                     // Lógica Azul: reserva comida al comer
                                     if (occupant.color.equals("blue")) {
@@ -284,6 +330,7 @@ public class AdvancedSimulationService implements ISimulationService {
                 return;
             }
         }
+        // Si no hay sitio cerca, buscamos en toda la rejilla como último recurso
         for (int r = 0; r < GRID_SIZE; r++) {
             for (int c = 0; c < GRID_SIZE; c++) {
                 if (grid[r][c] == null) {
@@ -310,7 +357,7 @@ public class AdvancedSimulationService implements ISimulationService {
         for (int[] pos : neighbors) {
             if (grid[pos[1]][pos[0]] == null) {
                 grid[pos[1]][pos[0]] = new Cell(parent.name, parent.color);
-                log.info("Reproducción Avanzada: Célula {} ({}) nació en [{}, {}]", parent.name, parent.color, pos[1], pos[0]);
+                log.info("Reproducción: Célula {} ({}) nació en [{}, {}]", parent.name, parent.color, pos[1], pos[0]);
                 return true;
             }
         }

@@ -6,6 +6,9 @@ import org.trabajott1.persistence.entity.EstadisticaPoblacionEntity;
 
 /**
  * Repositorio para la entidad EstadisticaPoblacionEntity.
+ * 
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Repository
 public interface EstadisticaPoblacionRepository extends JpaRepository<EstadisticaPoblacionEntity, Integer> {

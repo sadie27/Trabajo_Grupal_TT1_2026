@@ -5,6 +5,9 @@ import jakarta.persistence.*;
 /**
  * Entidad que almacena las estadísticas de población de una simulación.
  * Representa la cantidad de individuos de un color específico en un paso de tiempo determinado.
+ * 
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 @Entity
 @Table(name = "estadisticas_poblacion")

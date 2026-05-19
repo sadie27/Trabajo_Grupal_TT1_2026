@@ -4,6 +4,9 @@ import java.util.List;
 
 /**
  * Interfaz para los servicios de simulación.
+ * 
+ * @author Lucas, Ana, Clara, Santiago
+ * @version 1.0
  */
 public interface ISimulationService {
     /**
