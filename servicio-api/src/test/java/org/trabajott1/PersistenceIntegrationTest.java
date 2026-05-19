@@ -5,6 +5,7 @@ import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.annotation.ComponentScan;
 import org.openapitools.jackson.nullable.JsonNullable;
 import org.trabajott1.configuration.RabbitMQConfig;
 import org.trabajott1.model.SimulationMessage;
@@ -29,7 +30,8 @@ import static org.mockito.Mockito.verify;
  * @author Lucas, Ana, Clara, Santiago
  * @version 1.0
  */
-@SpringBootTest
+@SpringBootTest(classes = ApiApplication.class)
+@ComponentScan(basePackages = {"org.trabajott1"})
 class PersistenceIntegrationTest {
 
     @Autowired
