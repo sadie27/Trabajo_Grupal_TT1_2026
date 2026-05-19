@@ -32,7 +32,7 @@ public class AdvancedSimulationService implements ISimulationService {
     private static final int MAX_TIME = 10;
 
     /** Colores asignados a las especies. */
-    private static final String[] COLORS = {"red", "blue", "green", "yellow"};
+    private static final String[] COLORS = {"red", "blue", "green", "yellow", "orange", "purple"};
 
     /**
      * Representa una célula en el grid de simulación.
@@ -99,17 +99,17 @@ public class AdvancedSimulationService implements ISimulationService {
      * Si la solicitud no existe, no hace nada. Al terminar, marca la solicitud como "FINALIZADA".
      *
      * @param solicitudId       el ID interno de la solicitud en la base de datos
-     * @param entityNames       lista de nombres de las entidades participantes (entre 1 y 4)
+     * @param entityNames       lista de nombres de las entidades participantes (entre 1 y 6)
      * @param initialQuantities lista de cantidades iniciales de cada entidad, en el mismo orden
-     * @throws IllegalArgumentException si el número de entidades no está entre 1 y 4
+     * @throws IllegalArgumentException si el número de entidades no está entre 1 y 6
      * @author Lucas, Ana, Clara, Santiago
      * @version 1.0
      */
     @Override
     @Transactional
     public void executeSimulation(Integer solicitudId, List<String> entityNames, List<Integer> initialQuantities) {
-        if (entityNames.size() < 1 || entityNames.size() > 4) {
-            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 4, se recibieron: " + entityNames.size());
+        if (entityNames.size() < 1 || entityNames.size() > 6) {
+            throw new IllegalArgumentException("El número de entidades debe estar entre 1 y 6, se recibieron: " + entityNames.size());
         }
 
         List<EstadisticaPoblacionEntity> stats = new ArrayList<>();

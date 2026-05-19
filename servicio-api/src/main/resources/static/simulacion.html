@@ -1,0 +1,1008 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Vida Artificial — Visualizador</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@400;500;600;700&family=Mulish:wght@300;400;500&display=swap"
+    rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
+
+  <style>
+    :root {
+      --bg: #f3f2ee;
+      --surface: #ffffff;
+      --surface-2: #eceae4;
+      --border: rgba(0, 0, 0, 0.07);
+      --border-2: rgba(0, 0, 0, 0.12);
+      --text: #111318;
+      --text-2: #6b6e82;
+      --text-3: #b0b3c6;
+      --accent: #9e7a28;
+      --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+      --ease-in-out: cubic-bezier(0.77, 0, 0.175, 1);
+
+      --red: #c44d62;
+      --blue: #3680be;
+      --green: #2a9e54;
+      --yellow: #a87e18;
+      --orange: #b45e2c;
+      --purple: #6c3eb8;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Mulish', sans-serif;
+      font-weight: 400;
+      min-height: 100dvh;
+      -webkit-font-smoothing: antialiased;
+      overflow-x: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed;
+      inset: 0;
+      background-image: radial-gradient(circle, rgba(0, 0, 0, 0.055) 1px, transparent 1px);
+      background-size: 28px 28px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .layout {
+      position: relative;
+      z-index: 1;
+      max-width: 1100px;
+      margin: 0 auto;
+      padding: 64px 40px 96px;
+    }
+
+    /* ── Header ── */
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 48px;
+      margin-bottom: 64px;
+      flex-wrap: wrap;
+    }
+
+    .header-left {
+      flex: 1;
+      min-width: 240px;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.13em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 18px;
+    }
+
+    .eyebrow::before {
+      content: '';
+      display: block;
+      width: 18px;
+      height: 1px;
+      background: var(--text-3);
+      flex-shrink: 0;
+    }
+
+    h1 {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 700;
+      font-size: clamp(2.8rem, 5vw, 3.8rem);
+      line-height: 0.93;
+      letter-spacing: -0.01em;
+      color: var(--text);
+    }
+
+    h1 em {
+      font-style: normal;
+      color: var(--accent);
+    }
+
+    .tagline {
+      margin-top: 16px;
+      font-size: 0.875rem;
+      color: var(--text-2);
+      font-weight: 300;
+      line-height: 1.65;
+      max-width: 40ch;
+    }
+
+    /* ── Input block ── */
+    .search-block {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      padding-top: 6px;
+    }
+
+    .input-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .token-input {
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 1rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--text);
+      width: 176px;
+      outline: none;
+      transition: border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
+      appearance: textfield;
+      -moz-appearance: textfield;
+    }
+
+    .token-input::-webkit-outer-spin-button,
+    .token-input::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+    }
+
+    .token-input::placeholder {
+      color: var(--text-3);
+    }
+
+    .token-input:focus {
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(158, 122, 40, 0.1);
+    }
+
+    .btn-load {
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: 6px;
+      padding: 10px 20px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.875rem;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      cursor: pointer;
+      transition: opacity 150ms var(--ease-out), transform 100ms var(--ease-out);
+      white-space: nowrap;
+    }
+
+    @media (hover: hover) and (pointer: fine) {
+      .btn-load:hover {
+        opacity: 0.82;
+      }
+    }
+
+    .btn-load:active {
+      transform: scale(0.98);
+    }
+
+    .btn-load:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .spinner {
+      display: none;
+      width: 14px;
+      height: 14px;
+      border: 1.5px solid rgba(0, 0, 0, 0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.65s linear infinite;
+      flex-shrink: 0;
+    }
+
+    .spinner.show {
+      display: block;
+    }
+
+    @keyframes spin {
+      to {
+        transform: rotate(360deg);
+      }
+    }
+
+    .error-msg {
+      font-size: 0.8rem;
+      color: var(--red);
+      font-weight: 400;
+      min-height: 1.2em;
+      opacity: 0;
+      transition: opacity 160ms var(--ease-out);
+    }
+
+    .error-msg.show {
+      opacity: 1;
+    }
+
+    /* ── Divider ── */
+    .divider {
+      height: 1px;
+      background: var(--border);
+      margin-bottom: 52px;
+    }
+
+    /* ── Stats ── */
+    /*
+     * The stats row is dynamic: populated with however many entities the
+     * simulation has (1–6). Each stat item is generated in JS.
+     */
+    .stats-row {
+      display: grid;
+      /* columns set dynamically via JS */
+      grid-template-columns: repeat(3, 1fr);
+      margin-bottom: 56px;
+    }
+
+    .stat-item {
+      padding-right: 36px;
+      position: relative;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .stat-item:not(:first-child) {
+      padding-left: 36px;
+    }
+
+    .stat-item:not(:last-child)::after {
+      content: '';
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: var(--border);
+    }
+
+    .stat-item.in {
+      animation: fadeUp 260ms var(--ease-out) forwards;
+    }
+
+    @keyframes fadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .stat-label {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      margin-bottom: 14px;
+    }
+
+    .stat-value {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.01em;
+      color: var(--text-3);
+      margin-bottom: 8px;
+      transition: color 280ms var(--ease-out);
+      /* Truncate long entity names gracefully */
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    /* Skeleton shimmer */
+    .stat-value.loading {
+      color: transparent !important;
+      background: linear-gradient(90deg, var(--surface-2) 25%, #e2e0da 50%, var(--surface-2) 75%);
+      background-size: 200% 100%;
+      border-radius: 3px;
+      animation: shimmer 1.4s infinite;
+      width: 90px;
+      height: 2.2rem;
+      display: block;
+    }
+
+    @keyframes shimmer {
+      0% {
+        background-position: 200% 0;
+      }
+
+      100% {
+        background-position: -200% 0;
+      }
+    }
+
+    .stat-value.c-red {
+      color: var(--red);
+    }
+
+    .stat-value.c-blue {
+      color: var(--blue);
+    }
+
+    .stat-value.c-green {
+      color: var(--green);
+    }
+
+    .stat-value.c-yellow {
+      color: var(--yellow);
+    }
+
+    .stat-value.c-orange {
+      color: var(--orange);
+    }
+
+    .stat-value.c-purple {
+      color: var(--purple);
+    }
+
+    .stat-color-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 10px;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-3);
+    }
+
+    .stat-color-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    .stat-sub {
+      font-size: 0.775rem;
+      color: var(--text-3);
+      font-weight: 300;
+      line-height: 1.55;
+      margin-top: 6px;
+    }
+
+    /* ── Entity pills — shown below stats when data loads ── */
+    .entities-row {
+      display: none;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 40px;
+      opacity: 0;
+      transform: translateY(6px);
+      transition: opacity 240ms var(--ease-out) 200ms, transform 240ms var(--ease-out) 200ms;
+    }
+
+    .entities-row.visible {
+      display: flex;
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .entity-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--surface);
+      border: 1px solid var(--border-2);
+      border-radius: 20px;
+      padding: 5px 12px 5px 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--text-2);
+    }
+
+    .entity-pill-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      flex-shrink: 0;
+    }
+
+    /* ── Chart ── */
+    .chart-section {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+
+    .chart-section.in {
+      animation: fadeUp 300ms var(--ease-out) 150ms forwards;
+    }
+
+    .chart-header {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      margin-bottom: 24px;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .chart-title {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-weight: 600;
+      font-size: 0.875rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-2);
+    }
+
+    .chart-token {
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.78rem;
+      font-weight: 400;
+      letter-spacing: 0.06em;
+      color: var(--text-3);
+    }
+
+    .chart-wrap {
+      height: 296px;
+      margin-bottom: 20px;
+    }
+
+    .legend {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
+      padding-top: 4px;
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-family: 'Barlow Condensed', sans-serif;
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.05em;
+      color: var(--text-2);
+    }
+
+    .legend-tick {
+      width: 18px;
+      height: 1.5px;
+      border-radius: 1px;
+      flex-shrink: 0;
+    }
+
+    .legend-name {
+      color: var(--text);
+    }
+
+    .legend-color-label {
+      color: var(--text-3);
+      font-weight: 400;
+    }
+
+    /* ── Empty state ── */
+    .empty-state {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .empty-state.hidden {
+      display: none;
+    }
+
+    .empty-grid {
+      display: grid;
+      grid-template-columns: repeat(8, 8px);
+      grid-template-rows: repeat(8, 8px);
+      gap: 3px;
+    }
+
+    .eg {
+      width: 8px;
+      height: 8px;
+      border-radius: 1px;
+      background: rgba(0, 0, 0, 0.07);
+    }
+
+    .eg.r {
+      background: rgba(196, 77, 98, 0.2);
+    }
+
+    .eg.b {
+      background: rgba(54, 128, 190, 0.2);
+    }
+
+    .eg.g {
+      background: rgba(42, 158, 84, 0.2);
+    }
+
+    .eg.y {
+      background: rgba(168, 126, 24, 0.2);
+    }
+
+    .empty-text {
+      font-size: 0.82rem;
+      color: var(--text-3);
+      font-weight: 300;
+      line-height: 1.6;
+      max-width: 34ch;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .layout {
+        padding: 40px 20px 72px;
+      }
+
+      .header {
+        gap: 32px;
+        margin-bottom: 48px;
+      }
+
+      h1 {
+        font-size: 2.6rem;
+      }
+
+      .stats-row {
+        grid-template-columns: 1fr !important;
+        gap: 32px;
+      }
+
+      .stat-item {
+        padding: 0 !important;
+      }
+
+      .stat-item::after {
+        display: none !important;
+      }
+
+      .chart-wrap {
+        height: 240px;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      .stat-item,
+      .chart-section,
+      .entities-row {
+        animation: none !important;
+        opacity: 1 !important;
+        transform: none !important;
+        transition: none !important;
+      }
+
+      .stat-value.loading {
+        animation: none;
+      }
+
+      .spinner {
+        animation: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="layout">
+
+    <header class="header">
+      <div class="header-left">
+        <p class="eyebrow">Universidad de La Rioja · TT1 2025–26</p>
+        <h1>Vida<br><em>Artificial</em></h1>
+        <p class="tagline">Evolución y estadísticas de las poblaciones celulares a lo largo de los pasos de simulación.
+        </p>
+      </div>
+
+      <div class="search-block">
+        <label class="input-label" for="tokenInput">Token de simulación</label>
+        <div class="input-row">
+          <input id="tokenInput" class="token-input" type="number" placeholder="ej. 47382" min="0" autocomplete="off" />
+          <button class="btn-load" id="btnLoad" onclick="cargar()">Cargar</button>
+          <div class="spinner" id="spinner" aria-hidden="true"></div>
+        </div>
+        <p class="error-msg" id="errorMsg" role="alert" aria-live="polite"></p>
+      </div>
+    </header>
+
+    <div class="divider"></div>
+
+    <!-- Stats — rebuilt dynamically on each load -->
+    <div class="stats-row" id="statsRow"></div>
+
+    <!-- Entity pills — one per entity present in this simulation -->
+    <div class="entities-row" id="entitiesRow" aria-label="Entidades de la simulación"></div>
+
+    <!-- Chart -->
+    <div class="chart-section" id="chartSection">
+
+      <div class="empty-state" id="emptyState" aria-label="Sin datos cargados">
+        <div class="empty-grid" aria-hidden="true">
+          <div class="eg"></div>
+          <div class="eg r"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg b"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg g"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg r"></div>
+          <div class="eg"></div>
+          <div class="eg y"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg b"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg r"></div>
+          <div class="eg"></div>
+          <div class="eg y"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg g"></div>
+          <div class="eg"></div>
+          <div class="eg b"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg r"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg g"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg y"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg b"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg y"></div>
+          <div class="eg"></div>
+          <div class="eg g"></div>
+          <div class="eg"></div>
+          <div class="eg r"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg r"></div>
+          <div class="eg"></div>
+          <div class="eg b"></div>
+          <div class="eg"></div>
+          <div class="eg"></div>
+          <div class="eg y"></div>
+          <div class="eg"></div>
+        </div>
+        <p class="empty-text">Introduce un token para visualizar la evolución de las poblaciones.</p>
+      </div>
+
+      <div id="chartContent" style="display:none;">
+        <div class="chart-header">
+          <p class="chart-title">Evolución de poblaciones</p>
+          <p class="chart-token" id="chartToken"></p>
+        </div>
+        <div class="chart-wrap">
+          <canvas id="myChart" aria-label="Gráfica de evolución de poblaciones por entidad"></canvas>
+        </div>
+        <div class="legend" id="legend" aria-label="Leyenda"></div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    const COLOR_HEX = {
+      red: '#c44d62',
+      blue: '#3680be',
+      green: '#2a9e54',
+      yellow: '#a87e18',
+      orange: '#b45e2c',
+      purple: '#6c3eb8',
+    };
+
+    let chart = null;
+
+    // Build a color→entityName map from the API's entidades list.
+    // Falls back to the color name itself if entidades is absent.
+    function buildColorMap(entidades) {
+      const map = {};
+      if (entidades && entidades.length) {
+        entidades.forEach(e => { map[e.color] = e.nombre; });
+      }
+      return map;
+    }
+
+    // Label to show: entity name if known, otherwise the color string.
+    function label(color, colorMap) {
+      return colorMap[color] || color;
+    }
+
+    async function cargar() {
+      const tok = document.getElementById('tokenInput').value.trim();
+      if (!tok) { showError('Introduce un token de simulación.'); return; }
+
+      setLoading(true);
+      clearError();
+      showSkeletons();
+
+      try {
+        const res = await fetch(`/Estadisticas?tok=${tok}`);
+        const data = await res.json();
+
+        if (!data.done) {
+          clearStatsRow();
+          showError(data.errorMessage || 'No se encontraron datos para este token.');
+          return;
+        }
+
+        const colorMap = buildColorMap(data.entidades);
+        renderStats(data, colorMap);
+        renderEntities(data.entidades);
+        renderChart(data, colorMap);
+
+      } catch {
+        clearStatsRow();
+        showError('No se pudo conectar con el servidor.');
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    /* ── Stats ────────────────────────────────────────────── */
+
+    function renderStats(data, colorMap) {
+      const defs = [
+        {
+          label: 'Más reproducido',
+          color: data.colorMasReproducido,
+          sub: 'Mayor crecimiento acumulado',
+        },
+        {
+          label: 'Más depredador',
+          color: data.colorMasComio,
+          sub: 'Estimado por reducción de presa',
+        },
+        {
+          label: 'Dominante al final',
+          color: data.colorMasDominante,
+          sub: 'Mayor población en paso final',
+        },
+      ];
+
+      const row = document.getElementById('statsRow');
+      row.style.gridTemplateColumns = `repeat(3, 1fr)`;
+      row.innerHTML = '';
+
+      defs.forEach(({ label: lbl, color, sub }, i) => {
+        const name = label(color, colorMap);
+        const hex = COLOR_HEX[color] ?? null;
+
+        const item = document.createElement('div');
+        item.className = 'stat-item';
+        item.id = `stat${i}`;
+        item.innerHTML = `
+        <p class="stat-label">${lbl}</p>
+        <p class="stat-value${hex ? ` c-${color}` : ''}">${name ?? '—'}</p>
+        ${hex && color !== name ? `
+          <span class="stat-color-badge">
+            <span class="stat-color-dot" style="background:${hex}"></span>
+            ${color}
+          </span>` : ''}
+        <p class="stat-sub">${sub}</p>
+      `;
+        row.appendChild(item);
+      });
+
+      // Stagger in with delay per item
+      row.querySelectorAll('.stat-item').forEach((el, i) => {
+        el.style.animationDelay = `${i * 55}ms`;
+        void el.offsetWidth;
+        el.classList.add('in');
+      });
+    }
+
+    /* ── Entity pills ─────────────────────────────────────── */
+
+    function renderEntities(entidades) {
+      const row = document.getElementById('entitiesRow');
+      if (!entidades || !entidades.length) {
+        row.classList.remove('visible');
+        return;
+      }
+
+      row.innerHTML = entidades.map(e => `
+      <div class="entity-pill">
+        <span class="entity-pill-dot" style="background:${COLOR_HEX[e.color] ?? '#aaa'}"></span>
+        ${e.nombre}
+      </div>
+    `).join('');
+
+      // Force reflow so transition fires
+      row.style.display = 'flex';
+      row.style.opacity = '0';
+      row.style.transform = 'translateY(6px)';
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          row.classList.add('visible');
+        });
+      });
+    }
+
+    /* ── Chart ────────────────────────────────────────────── */
+
+    function renderChart(data, colorMap) {
+      document.getElementById('chartToken').textContent = `token ${data.tokenSolicitud}`;
+
+      const byColor = {};
+      for (const row of data.poblacionPorPaso) {
+        if (!byColor[row.color]) byColor[row.color] = {};
+        byColor[row.color][row.pasoTiempo] = row.cantidad;
+      }
+
+      const steps = [...new Set(data.poblacionPorPaso.map(r => r.pasoTiempo))].sort((a, b) => a - b);
+      const colors = Object.keys(byColor);
+
+      const datasets = colors.map(color => ({
+        label: label(color, colorMap),
+        data: steps.map(t => byColor[color][t] ?? 0),
+        borderColor: COLOR_HEX[color] ?? '#888',
+        backgroundColor: 'transparent',
+        borderWidth: 1.5,
+        pointRadius: 3,
+        pointHoverRadius: 5,
+        pointBackgroundColor: COLOR_HEX[color] ?? '#888',
+        pointBorderWidth: 0,
+        tension: 0.3,
+      }));
+
+      if (chart) chart.destroy();
+
+      chart = new Chart(document.getElementById('myChart'), {
+        type: 'line',
+        data: { labels: steps.map(t => `T${t}`), datasets },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          animation: { duration: 560, easing: 'easeOutQuart' },
+          interaction: { mode: 'index', intersect: false },
+          plugins: {
+            legend: { display: false },
+            tooltip: {
+              backgroundColor: '#ffffff',
+              borderColor: 'rgba(0,0,0,0.1)',
+              borderWidth: 1,
+              padding: { x: 14, y: 10 },
+              titleColor: 'rgba(0,0,0,0.4)',
+              bodyColor: '#111318',
+              titleFont: { family: "'Barlow Condensed', sans-serif", size: 10, weight: '500' },
+              bodyFont: { family: "'Barlow Condensed', sans-serif", size: 13, weight: '500' },
+              callbacks: {
+                title: ctx => `Paso ${ctx[0].label.replace('T', '')}`,
+                label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y}`,
+              },
+            },
+          },
+          scales: {
+            x: {
+              grid: { color: 'rgba(0,0,0,0.05)' },
+              border: { color: 'rgba(0,0,0,0.09)' },
+              ticks: { color: '#b0b3c6', font: { family: "'Barlow Condensed', sans-serif", size: 11, weight: '500' } },
+            },
+            y: {
+              grid: { color: 'rgba(0,0,0,0.05)' },
+              border: { color: 'transparent' },
+              ticks: { color: '#b0b3c6', font: { family: "'Barlow Condensed', sans-serif", size: 11 }, maxTicksLimit: 6 },
+              beginAtZero: true,
+            },
+          },
+        },
+      });
+
+      // Legend: entity name + color label for disambiguation
+      document.getElementById('legend').innerHTML = colors.map(c => {
+        const entityName = colorMap[c];
+        return `
+        <div class="legend-item">
+          <div class="legend-tick" style="background:${COLOR_HEX[c] ?? '#888'}"></div>
+          ${entityName
+            ? `<span class="legend-name">${entityName}</span><span class="legend-color-label">&nbsp;·&nbsp;${c}</span>`
+            : `<span>${c}</span>`
+          }
+        </div>`;
+      }).join('');
+
+      document.getElementById('emptyState').classList.add('hidden');
+      document.getElementById('chartContent').style.display = 'block';
+
+      const sec = document.getElementById('chartSection');
+      sec.classList.remove('in');
+      void sec.offsetWidth;
+      sec.classList.add('in');
+    }
+
+    /* ── Helpers ──────────────────────────────────────────── */
+
+    function showSkeletons() {
+      const row = document.getElementById('statsRow');
+      row.style.gridTemplateColumns = 'repeat(3, 1fr)';
+      row.innerHTML = [0, 1, 2].map(i => `
+      <div class="stat-item" id="stat${i}" style="opacity:1;transform:none;">
+        <p class="stat-label">&nbsp;</p>
+        <p class="stat-value loading"></p>
+        <p class="stat-sub">&nbsp;</p>
+      </div>`).join('');
+    }
+
+    function clearStatsRow() {
+      const row = document.getElementById('statsRow');
+      row.innerHTML = '';
+    }
+
+    function setLoading(on) {
+      document.getElementById('btnLoad').disabled = on;
+      document.getElementById('spinner').classList.toggle('show', on);
+    }
+
+    function showError(msg) {
+      const el = document.getElementById('errorMsg');
+      el.textContent = msg;
+      el.classList.add('show');
+    }
+
+    function clearError() {
+      const el = document.getElementById('errorMsg');
+      el.textContent = '';
+      el.classList.remove('show');
+    }
+
+    document.getElementById('tokenInput').addEventListener('keydown', e => {
+      if (e.key === 'Enter') cargar();
+    });
+  </script>
+</body>
+
+</html>
