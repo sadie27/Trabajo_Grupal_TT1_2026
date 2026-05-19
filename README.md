@@ -22,7 +22,7 @@ Este proyecto es el trabajo grupal de la asignatura **Taller Transversal I: Prog
    - [Solicitud](#solicitud)
    - [Resultados](#resultados)
    - [Email](#email)
-   - [Estadísticas](#estadísticas)
+   - [Estadísticas y dashboard](#estadísticas-y-dashboard)
 6. [Documentación JavaDoc](#documentación-javadoc)
 7. [Tests y CI/CD](#tests-y-cicd)
 8. [Estructura del proyecto](#estructura-del-proyecto)
@@ -241,11 +241,72 @@ tiempo,fila,columna,color
 
 ---
 
-### Estadísticas
+### Estadísticas y dashboard
+
+#### Endpoints de la API
 
 | Método | Ruta | Descripción |
 |---|---|---|
-| `GET` | `/Estadisticas` | Devuelve las estadísticas de población de una simulación finalizada |
+| `GET` | `/Estadisticas` | Estadísticas agregadas de una simulación finalizada |
+| `GET` | `/Dashboard/Stats` | Métricas de RabbitMQ en tiempo real (cola + canales) |
+
+**Ejemplo — Obtener estadísticas:**
+
+```http
+GET /Estadisticas?tok=47382
+```
+
+Respuesta (200):
+```json
+{
+  "done": true,
+  "errorMessage": null,
+  "tokenSolicitud": 47382,
+  "entidades": [
+    { "nombre": "Conejos", "color": "red" },
+    { "nombre": "Zorros",  "color": "blue" }
+  ],
+  "poblacionPorPaso": [
+    { "pasoTiempo": 0, "color": "red",  "cantidad": 10 },
+    { "pasoTiempo": 0, "color": "blue", "cantidad": 5  }
+  ],
+  "colorMasReproducido": "red",
+  "colorMasComio":       "blue",
+  "colorMasDominante":   "red"
+}
+```
+
+Devuelve `404` con `done: false` y `errorMessage` si el token no existe o la simulación no ha generado datos todavía.
+
+**Ejemplo — Métricas de RabbitMQ:**
+
+```http
+GET /Dashboard/Stats
+```
+
+Respuesta (200):
+```json
+{
+  "queueDepth":    3,
+  "deliverRate":   1.2,
+  "publishRate":   0.8,
+  "consumerCount": 5,
+  "channels": [
+    { "connectionName": "172.20.0.4:38012 -> 172.20.0.3:5672", "consumerCount": 1, "unackedCount": 0 }
+  ]
+}
+```
+
+Los datos provienen de la API de gestión de RabbitMQ (`/api/queues` y `/api/channels`). Si el broker no está disponible, los campos numéricos se devuelven a cero sin propagar el error.
+
+#### Páginas web estáticas
+
+Además de los endpoints JSON, el servicio sirve dos páginas HTML estáticas que consumen la API directamente desde el navegador:
+
+| Página | URL | Qué muestra |
+|---|---|---|
+| Visualizador de simulación | `http://localhost:8080/simulacion.html` | Animación paso a paso del grid 8×8, gráfica de evolución de población por color y resumen de estadísticas. Requiere introducir el token de una solicitud finalizada. |
+| Dashboard de workers | `http://localhost:8080/dashboard.html` | Métricas en tiempo real de RabbitMQ: profundidad de la cola, tasas de publicación/entrega y lista de workers (canales) activos. Se auto-refresca cada pocos segundos. |
 
 ---
 

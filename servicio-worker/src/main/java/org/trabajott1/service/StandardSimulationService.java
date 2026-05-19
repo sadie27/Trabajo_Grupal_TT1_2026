@@ -135,6 +135,14 @@ public class StandardSimulationService implements ISimulationService {
         }
     }
 
+    /**
+     * Determina si una célula del color {@code color1} puede comerse a una del color {@code color2}
+     * según la jerarquía circular {@code red→blue→green→yellow→orange→purple→red}.
+     *
+     * @param color1 color del depredador potencial
+     * @param color2 color de la presa potencial
+     * @return {@code true} si {@code color1} puede comer a {@code color2}
+     */
     private boolean canEat(String color1, String color2) {
         int i1 = -1, i2 = -1;
         for (int i = 0; i < COLORS.length; i++) {
@@ -144,6 +152,15 @@ public class StandardSimulationService implements ISimulationService {
         return (i1 != -1 && i2 != -1) && (i1 + 1) % COLORS.length == i2;
     }
 
+    /**
+     * Ejecuta la lógica de la simulación y construye la cadena de texto del resultado.
+     * Coloca las células en el grid, itera los pasos de tiempo y recoge estadísticas en cada paso.
+     *
+     * @param entityNames  nombres de las especies participantes
+     * @param initialQuantities cantidades iniciales correspondientes a cada especie
+     * @param statsList    lista en la que se acumulan los registros de estadística de población
+     * @return representación textual de la simulación (grid size + posiciones por paso)
+     */
     private String generateSimulationData(List<String> entityNames, List<Integer> initialQuantities, List<EstadisticaPoblacionEntity> statsList) {
         StringBuilder sb = new StringBuilder();
         sb.append(GRID_SIZE).append("\n");
@@ -255,6 +272,14 @@ public class StandardSimulationService implements ISimulationService {
         return sb.toString();
     }
 
+    /**
+     * Cuenta las células de cada color en el grid y añade un {@link EstadisticaPoblacionEntity}
+     * por color a {@code statsList} para el paso de tiempo {@code t}.
+     *
+     * @param grid      estado del grid en el paso de tiempo {@code t}
+     * @param t         número de paso de tiempo
+     * @param statsList lista a la que se añaden los registros de estadística
+     */
     private void collectStats(Cell[][] grid, int t, List<EstadisticaPoblacionEntity> statsList) {
         Map<String, Integer> counts = new HashMap<>();
         for (String color : COLORS) counts.put(color, 0);
@@ -273,6 +298,15 @@ public class StandardSimulationService implements ISimulationService {
         }
     }
 
+    /**
+     * Intenta colocar {@code cell} en {@code (x, y)}; si está ocupado busca una celda libre
+     * entre los vecinos adyacentes y, como último recurso, en todo el grid.
+     *
+     * @param grid grid donde se intenta colocar la célula
+     * @param cell célula a colocar
+     * @param x    columna de destino preferida
+     * @param y    fila de destino preferida
+     */
     private void placeInFreeSpot(Cell[][] grid, Cell cell, int x, int y) {
         if (grid[y][x] == null) {
             grid[y][x] = cell.copy();
@@ -307,6 +341,16 @@ public class StandardSimulationService implements ISimulationService {
         }
     }
 
+    /**
+     * Intenta colocar una nueva célula hija de {@code parent} en una celda libre adyacente a
+     * {@code (x, y)}.
+     *
+     * @param grid   grid donde se intenta reproducir
+     * @param parent célula progenitora
+     * @param x      columna de referencia para buscar espacio
+     * @param y      fila de referencia para buscar espacio
+     * @return {@code true} si se encontró una celda libre y la nueva célula fue colocada
+     */
     private boolean reproducir(Cell[][] grid, Cell parent, int x, int y) {
         List<int[]> neighbors = new ArrayList<>();
         for (int i = -1; i <= 1; i++) {
@@ -330,6 +374,15 @@ public class StandardSimulationService implements ISimulationService {
         return false;
     }
 
+    /**
+     * Añade una línea {@code t,y,x,color\n} al buffer de resultado de la simulación.
+     *
+     * @param sb    buffer de salida
+     * @param t     paso de tiempo
+     * @param y     fila de la célula
+     * @param x     columna de la célula
+     * @param color color de la célula
+     */
     private void appendCell(StringBuilder sb, int t, int y, int x, String color) {
         log.debug("Append: T={}, Pos=[{}, {}], Color={}", t, y, x, color);
         sb.append(t).append(",").append(y).append(",").append(x).append(",").append(color).append("\n");
