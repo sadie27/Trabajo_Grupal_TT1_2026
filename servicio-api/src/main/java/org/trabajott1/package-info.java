@@ -1,7 +1,7 @@
 /**
  * Paquete raíz de la aplicación ServicioConsumible TT1 2026.
  *
- * <p>Contiene la clase de arranque de Spring Boot ({@link org.trabajott1.ServicioTT1Application})
+ * <p>Contiene la clase de arranque de Spring Boot ({@link org.trabajott1.ApiApplication})
  * y el formateador de fechas RFC3339 usado por la capa de serialización JSON.
  *
  * <p>La arquitectura del proyecto sigue el patrón de capas:
