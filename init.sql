@@ -35,3 +35,16 @@ CREATE TABLE IF NOT EXISTS resultados (
 ALTER TABLE solicitudes COMMENT = 'Almacena las solicitudes de los usuarios';
 ALTER TABLE entidades_solicitud COMMENT = 'Almacena las entidades y cantidades de cada solicitud';
 ALTER TABLE resultados COMMENT = 'Almacena el resultado procesado de cada solicitud (1:1)';
+
+-- Tabla de estadísticas de población por paso de tiempo
+CREATE TABLE IF NOT EXISTS estadisticas_poblacion (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    id_solicitud INT NOT NULL,
+    paso_tiempo INT NOT NULL,
+    color VARCHAR(255) NOT NULL,
+    cantidad INT NOT NULL,
+    FOREIGN KEY (id_solicitud) REFERENCES solicitudes(id_solicitud) ON DELETE CASCADE,
+    INDEX idx_id_solicitud (id_solicitud)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+ALTER TABLE estadisticas_poblacion COMMENT = 'Almacena las estadísticas de población por paso de tiempo de cada simulación';
