@@ -19,5 +19,8 @@ jobs:
           distribution: temurin
           java-version: 21
 
+      - name: Install modules
+        run: mvn -B install -DskipTests
+
       - name: Generate Javadoc
         run: mvn -B javadoc:javadoc
