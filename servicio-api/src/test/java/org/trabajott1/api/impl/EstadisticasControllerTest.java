@@ -14,6 +14,7 @@ import org.springframework.test.web.servlet.MockMvc;
 import org.trabajott1.service.EstadisticasService;
 import org.trabajott1.service.EstadisticasService.EstadisticasResponse;
 import org.trabajott1.service.ResultadosService;
+import org.trabajott1.service.SolicitudService;
 
 import java.util.List;
 
@@ -48,6 +49,9 @@ class EstadisticasControllerTest {
 
     @MockBean
     private ResultadosService resultadosService;
+
+    @MockBean
+    private SolicitudService solicitudService;
 
     @Autowired
     private ObjectMapper objectMapper;
