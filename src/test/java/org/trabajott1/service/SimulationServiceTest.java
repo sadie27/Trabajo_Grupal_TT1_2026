@@ -8,6 +8,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.trabajott1.persistence.entity.SolicitudEntity;
 import org.trabajott1.repository.SolicitudRepository;
+import org.trabajott1.repository.EstadisticaPoblacionRepository;
 
 import java.util.List;
 import java.util.Optional;
@@ -29,8 +30,11 @@ class SimulationServiceTest {
     @Mock
     private SolicitudRepository solicitudRepository;
 
+    @Mock
+    private EstadisticaPoblacionRepository estadisticaPoblacionRepository;
+
     @InjectMocks
-    private SimulationService simulationService;
+    private StandardSimulationService simulationService;
 
     /**
      * Verifica que cuando la solicitud existe, la simulación se ejecuta y la entidad queda con estado "FINALIZADA"
@@ -61,6 +65,8 @@ class SimulationServiceTest {
         assertNotNull(savedEntity.getResultado());
         assertNotNull(savedEntity.getResultado().getDatosResultado());
         assertEquals(savedEntity, savedEntity.getResultado().getSolicitud());
+        
+        verify(estadisticaPoblacionRepository).saveAll(anyList());
     }
 
     /**
@@ -77,5 +83,6 @@ class SimulationServiceTest {
         simulationService.executeSimulation(solicitudId, List.of("A"), List.of(1));
 
         verify(solicitudRepository, never()).save(any());
+        verify(estadisticaPoblacionRepository, never()).saveAll(anyList());
     }
 }

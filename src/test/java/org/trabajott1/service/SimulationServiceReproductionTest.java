@@ -26,8 +26,11 @@ class SimulationServiceReproductionTest {
     @Mock
     private SolicitudRepository solicitudRepository;
 
+    @Mock
+    private org.trabajott1.repository.EstadisticaPoblacionRepository estadisticaPoblacionRepository;
+
     @InjectMocks
-    private SimulationService simulationService;
+    private StandardSimulationService simulationService;
 
     /**
      * Verifica que cuando una especie colisiona consigo misma, el número de células no disminuye
@@ -42,9 +45,9 @@ class SimulationServiceReproductionTest {
         List<Integer> quantities = List.of(10);
 
         try {
-            java.lang.reflect.Method method = SimulationService.class.getDeclaredMethod("generateSimulationData", List.class, List.class);
+            java.lang.reflect.Method method = StandardSimulationService.class.getDeclaredMethod("generateSimulationData", List.class, List.class, List.class);
             method.setAccessible(true);
-            String result = (String) method.invoke(simulationService, names, quantities);
+            String result = (String) method.invoke(simulationService, names, quantities, new java.util.ArrayList<>());
             
             String[] lines = result.split("\n");
             java.util.Map<Integer, Integer> counts = new java.util.HashMap<>();
@@ -80,17 +83,13 @@ class SimulationServiceReproductionTest {
      */
     @Test
     void testDifferentSpeciesNoEating_BothSurvive() {
-        // Red and Green don't eat each other (Red eats Blue, Blue eats Green)
-        List<String> names = List.of("SpeciesRed", "SpeciesBlue", "SpeciesGreen"); // Use Red and Green by skipping Blue
-        // Wait, COLORS[0]=red, COLORS[1]=blue, COLORS[2]=green
-        // If I use species 0 and 2, they are Red and Green.
         List<String> selectedNames = List.of("RedSpecies", "Dummy", "GreenSpecies");
         List<Integer> selectedQuantities = List.of(5, 0, 5);
 
         try {
-            java.lang.reflect.Method method = SimulationService.class.getDeclaredMethod("generateSimulationData", List.class, List.class);
+            java.lang.reflect.Method method = StandardSimulationService.class.getDeclaredMethod("generateSimulationData", List.class, List.class, List.class);
             method.setAccessible(true);
-            String result = (String) method.invoke(simulationService, selectedNames, selectedQuantities);
+            String result = (String) method.invoke(simulationService, selectedNames, selectedQuantities, new java.util.ArrayList<>());
             
             String[] lines = result.split("\n");
             java.util.Map<Integer, Integer> counts = new java.util.HashMap<>();

@@ -21,7 +21,7 @@ public class SimulationListener {
     private static final Logger log = LoggerFactory.getLogger(SimulationListener.class);
 
     /** Servicio que ejecuta la lógica de simulación de vida artificial. */
-    private final SimulationService simulationService;
+    private final ISimulationService simulationService;
 
     /**
      * Crea el listener inyectando el servicio de simulación.
@@ -30,7 +30,7 @@ public class SimulationListener {
      * @author Lucas, Ana, Clara, Santiago
      * @version 1.0
      */
-    public SimulationListener(SimulationService simulationService) {
+    public SimulationListener(ISimulationService simulationService) {
         this.simulationService = simulationService;
     }
 

@@ -23,7 +23,7 @@ import static org.mockito.Mockito.*;
 class SimulationListenerTest {
 
     @Mock
-    private SimulationService simulationService;
+    private ISimulationService simulationService;
 
     @InjectMocks
     private SimulationListener simulationListener;
