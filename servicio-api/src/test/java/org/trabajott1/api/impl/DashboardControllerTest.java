@@ -8,6 +8,7 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -15,6 +16,9 @@ import org.springframework.test.util.ReflectionTestUtils;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.web.client.RestClientException;
 import org.springframework.web.client.RestTemplate;
+import org.trabajott1.service.EmailService;
+import org.trabajott1.service.ResultadosService;
+import org.trabajott1.service.SolicitudService;
 
 import static org.mockito.ArgumentMatchers.*;
 import static org.mockito.Mockito.*;
@@ -47,6 +51,15 @@ class DashboardControllerTest {
 
     @Autowired
     private DashboardController dashboardController;
+
+    @MockBean
+    private ResultadosService resultadosService;
+
+    @MockBean
+    private EmailService emailService;
+
+    @MockBean
+    private SolicitudService solicitudService;
 
     private RestTemplate mockRestTemplate;
 

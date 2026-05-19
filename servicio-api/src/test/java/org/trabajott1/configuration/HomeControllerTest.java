@@ -7,7 +7,11 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 import org.springframework.boot.autoconfigure.jdbc.DataSourceTransactionManagerAutoConfiguration;
 import org.springframework.boot.autoconfigure.orm.jpa.HibernateJpaAutoConfiguration;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.web.servlet.MockMvc;
+import org.trabajott1.service.EmailService;
+import org.trabajott1.service.ResultadosService;
+import org.trabajott1.service.SolicitudService;
 
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -32,6 +36,15 @@ class HomeControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @MockBean
+    private ResultadosService resultadosService;
+
+    @MockBean
+    private EmailService emailService;
+
+    @MockBean
+    private SolicitudService solicitudService;
 
     /**
      * Verifica que {@code GET /} responde con HTTP 302 y la cabecera Location
